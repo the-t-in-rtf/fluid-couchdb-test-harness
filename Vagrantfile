@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Docker image to use for CouchDB
+docker_image = "couchdb"
+
+# Prepare the port forwarding for CouchDB
+docker_couchdb_port = 5984
+host_couchdb_port   = 25984
+guest_couchdb_port  = 25984
+
+# By default this VM will use 2 processor cores and 2GB of RAM. The 'VM_CPUS' and
+# "VM_RAM" environment variables can be used to change that behaviour.
+cpus = ENV["VM_CPUS"] || 2
+ram = ENV["VM_RAM"] || 2048
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "inclusivedesign/fedora28"
+
+  # Port forwarding takes place here. The 'guest' port is used inside the VM
+  # whereas the 'host' port is used by your host operating system.
+  config.vm.network "forwarded_port", guest: guest_couchdb_port, host: host_couchdb_port, protocol: "tcp",
+    auto_correct: true
+
+  config.vm.provider :virtualbox do |vm|
+    vm.customize ["modifyvm", :id, "--memory", ram]
+    vm.customize ["modifyvm", :id, "--cpus", cpus]
+    vm.customize ["modifyvm", :id, "--vram", "256"]
+    vm.customize ["modifyvm", :id, "--accelerate3d", "off"]
+    vm.customize ["modifyvm", :id, "--audio", "null", "--audiocontroller", "ac97"]
+    vm.customize ["modifyvm", :id, "--ioapic", "on"]
+    vm.customize ["setextradata", "global", "GUI/SuppressMessages", "all"]
+  end
+
+  # TODO: this needs to be run beyond the provisioning stage, i.e. whenever the container is started.
+  config.vm.provision "shell", run: 'always', inline: <<-SHELL
+    sudo docker run -d -p #{guest_couchdb_port}:#{docker_couchdb_port} #{docker_image}
+  SHELL
+end

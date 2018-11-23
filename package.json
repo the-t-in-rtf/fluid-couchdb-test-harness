@@ -1,0 +1,32 @@
+{
+    "name": "gpii-couchdb-test-harness",
+    "version": "1.0.0",
+    "description": "A library to assist in testing CouchDB integration within the Fluid/GPII/Morphic ecosystem.",
+    "main": "index.js",
+    "scripts": {
+        "test": "node node_modules/nyc/bin/nyc.js node tests/all-tests.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/GPII/gpii-couchdb-test-harness.git"
+    },
+    "author": "Tony Atkins <tony@raisingthefloor.org>",
+    "license": "BSD-3-Clause",
+    "bugs": {
+        "url": "https://github.com/GPII/gpii-couchdb-test-harness/issues"
+    },
+    "homepage": "https://github.com/GPII/gpii-couchdb-test-harness#readme",
+    "dependencies": {
+        "infusion": "3.0.0-dev.20181030T133624Z.f977b0fa9"
+    },
+    "devDependencies": {
+        "eslint": "5.9.0",
+        "eslint-config-fluid": "1.3.0",
+        "gpii-grunt-lint-all": "1.0.5",
+        "grunt": "1.0.3",
+        "kettle": "1.8.1",
+        "node-jqunit": "1.1.8",
+        "nyc": "13.1.0",
+        "request": "2.88.0"
+    }
+}
