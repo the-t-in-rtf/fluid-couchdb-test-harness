@@ -98,6 +98,8 @@ gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbN
                 }
             );
 
+            // TODO: Once we only support CouchDB 2.2 or higher, we can get metadata for all endpoints at once:
+            // See: http://docs.couchdb.org/en/stable/api/server/common.html#post--_dbs_info
             fluid.log(fluid.logLevel.TRACE, "Requesting metadata for database: ", dbUrl);
             request.get(dbUrl, function (error, response) {
                 if (error) {
