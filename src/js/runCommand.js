@@ -26,7 +26,7 @@ gpii.test.couchdb.defaultCommandOptions = {
 gpii.test.couchdb.runCommand = function (commandTemplate, commandPayload, callback, message, commandOptions) {
     var mergedCommandOptions = fluid.extend({}, gpii.test.couchdb.defaultCommandOptions, commandOptions);
     if (message) {
-        fluid.log(message);
+        fluid.log(fluid.logLevel.TRACE, message);
     }
 
     var command = fluid.stringTemplate(

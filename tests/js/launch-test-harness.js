@@ -6,8 +6,7 @@ var gpii  = fluid.registerNamespace("gpii");
 
 require("../../");
 
-//fluid.setLogging(true);
-fluid.setLogLevel(fluid.logLevel.TRACE);
+fluid.setLogging(true);
 
 gpii.test.couchdb.harness({
     port: 6789,

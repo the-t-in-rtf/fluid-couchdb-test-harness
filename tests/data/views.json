@@ -1,0 +1,29 @@
+{
+    "docs": [
+        {
+            "_id": "_design/count",
+            "views": {
+                "count": {
+                    "map":    "function (doc) {\n    emit(doc.type, doc.name);\n}",
+                    "reduce": "_count"
+                }
+            }
+        },
+        {
+            "type": "bird",
+            "name": "ostrich"
+        },
+        {
+            "type": "beast",
+            "name": "honey badger"
+        },
+        {
+            "type": "bird",
+            "name": "coot"
+        },
+        {
+            "type": "beast",
+            "name": "wolverine"
+        }
+    ]
+}

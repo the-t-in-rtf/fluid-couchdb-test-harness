@@ -23,9 +23,20 @@ gpii.test.couchdb.checkResponse = function (response, body, expectedStatus, expe
 
     jqUnit.assertEquals("The status should be as expected.", expectedStatus, response.statusCode);
 
-    // NOTE:  This only works for results where you know the exact response or a simple subset.  Deeply inserted
-    // "couchisms" such as record `_id` and `_rev` values must be checked separately.  See the tests in gpii-pouchdb-lucene for an example.
     if (expectedBody) {
-        jqUnit.assertLeftHand("The body should be as expected.", expectedBody, bodyData);
+        if (typeof expectedBody === "object" && expectedBody.rows) {
+            jqUnit.assertLeftHand(
+                "Everything but the row data should match.",
+                fluid.filterKeys(expectedBody, ["rows"], true),
+                fluid.filterKeys(bodyData, ["rows"], true)
+            );
+            fluid.each(expectedBody.rows, function (expectedValue, index) {
+                var actualValue = bodyData.rows[index];
+                jqUnit.assertLeftHand("Row entry " + index + " should be as expected.", expectedValue, actualValue);
+            });
+        }
+        else {
+            jqUnit.assertLeftHand("The body should be as expected.", expectedBody, bodyData);
+        }
     }
 };
