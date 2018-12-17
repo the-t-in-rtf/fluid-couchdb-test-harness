@@ -14,6 +14,8 @@ gpii.test.couchdb.harness.config = {
         rgb:              { data: "%gpii-couchdb-test-harness/tests/data/rgb.json"},
         // Sample data to test views, including map/reduce
         views:            { data: "%gpii-couchdb-test-harness/tests/data/views.json"},
+        // Test loading of payloads that have not been wrapped in a "docs" element.
+        nonbulk:          { data: "%gpii-couchdb-test-harness/tests/data/non-bulk.json"},
         nodata:           {}
     }
 };

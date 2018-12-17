@@ -230,7 +230,7 @@ gpii.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName,
             try {
                 var resolvedPath = fluid.module.resolvePath(dataFilePath);
                 var data = require(resolvedPath);
-                var fileDocs = fluid.get(data, "docs");
+                var fileDocs = Array.isArray(data) ? data : fluid.get(data, "docs");
                 if (fileDocs) {
                     allData.docs = allData.docs.concat(fileDocs);
                 }

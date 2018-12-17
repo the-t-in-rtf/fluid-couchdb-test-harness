@@ -34,7 +34,8 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
         supplementalRead: { has: "data" },
         afterDelete:      {},
         beforeDelete:     { _id: "todelete"},
-        insert:           { id: "toinsert", foo: "bar"}
+        insert:           { id: "toinsert", foo: "bar"},
+        nonBulkRequest:   { total_rows: 6 }
     },
     rawModules: [
         {
@@ -117,6 +118,22 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             event:    "{supplementalReadRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{supplementalReadRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.supplementalRead"]
+                        }
+                    ]
+                },
+                {
+                    name: "Confirm that 'non bulk' data was loaded correctly.",
+                    type: "test",
+                    sequence: [
+                        {
+                            func: "{nonBulkRequest}.send",
+                            args: [{}]
+                        },
+                        {
+                            listener: "gpii.test.couchdb.checkResponse",
+                            event:    "{nonBulkRequest}.events.onComplete",
+                            //        (response, body, expectedStatus, expectedBody)
+                            args:     ["{nonBulkRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.nonBulkRequest"]
                         }
                     ]
                 },
@@ -267,8 +284,13 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
             options: {
                 path:   "/sample/toinsert"
             }
+        },
+        nonBulkRequest: {
+            type: "gpii.test.couchdb.request",
+            options: {
+                path: "/nonbulk/_all_docs"
+            }
         }
-
     }
 });
 
