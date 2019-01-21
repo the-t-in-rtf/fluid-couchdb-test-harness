@@ -12,7 +12,7 @@ require("./src/test/harness-config");
 fluid.registerNamespace("gpii.test.couchdb");
 
 gpii.test.couchdb.loadTestingSupport = function () {
-    require("./src/test/caseHolder");
+    require("./src/test/caseholder");
     require("./src/test/environment");
     require("./src/test/request");
 };
