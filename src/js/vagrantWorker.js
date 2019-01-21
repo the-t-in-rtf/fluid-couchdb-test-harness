@@ -2,6 +2,9 @@
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 
+var readline = require("readline");
+var stream   = require("stream");
+
 fluid.registerNamespace("gpii.test.couchdb.worker.vagrant");
 
 /**
@@ -29,20 +32,39 @@ fluid.registerNamespace("gpii.test.couchdb.worker.vagrant");
  * }
  *
  * @param {String} rawOutput - The output of a Vagrant command run using the `--machine-readable` option.
- * @return {Object} - An object whose deep structure is as outlined above.
+ * @return {Promise} - A `fluid.promise` that will be resolved with the output or rejected on error.
  *
  */
 gpii.test.couchdb.worker.vagrant.parseVagrantOutput = function (rawOutput) {
+    var parsePromise = fluid.promise();
+
+    // http://stackoverflow.com/questions/16038705/how-to-wrap-a-buffer-as-a-stream2-readable-stream
+    var bufferStream = new stream.PassThrough();
+    bufferStream.end(rawOutput);
+
+    var rl = readline.createInterface({
+        input: bufferStream
+    });
+
     var entry = {};
-    var lines = rawOutput.split("\n");
-    fluid.each(lines, function (line) {
+
+    rl.on("line", function (line) {
         if (line.length) {
             var segments = line.split(",").slice(2);
             var value = segments.pop().replace("%!(VAGRANT_COMMA)", ",");
             fluid.set(entry, segments, value);
         }
     });
-    return entry;
+
+    rl.on("close", function () {
+        parsePromise.resolve(entry);
+    });
+
+    rl.on("error", function (error) {
+        parsePromise.reject(error);
+    });
+
+    return parsePromise;
 };
 
 /**
@@ -59,13 +81,17 @@ gpii.test.couchdb.worker.vagrant.isUp = function (that) {
     var vagrantStatusPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.vmStatus, that.options, "Checking Vagrant status.");
     vagrantStatusPromise.then(
         function (commandOutput) {
-            var containerEntry = gpii.test.couchdb.worker.vagrant.parseVagrantOutput(commandOutput);
-            if (fluid.get(containerEntry, "state") === "running") {
-                isUpPromise.resolve(true);
-            }
-            else {
-                isUpPromise.resolve(false);
-            }
+            gpii.test.couchdb.worker.vagrant.parseVagrantOutput(commandOutput).then(
+                function (containerEntry) {
+                    if (fluid.get(containerEntry, "state") === "running") {
+                        isUpPromise.resolve(true);
+                    }
+                    else {
+                        isUpPromise.resolve(false);
+                    }
+                },
+                isUpPromise.reject
+            );
         },
         isUpPromise.reject
     );

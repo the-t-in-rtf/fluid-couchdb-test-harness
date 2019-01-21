@@ -1,6 +1,8 @@
 /* eslint-env node */
 "use strict";
 
+require("./js/parser-unit-tests");
+
 require("./js/container-cleanup");
 
 require("./js/basic-tests");

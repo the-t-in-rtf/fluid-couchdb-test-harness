@@ -274,10 +274,10 @@ gpii.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName,
  * @param {Object} that - The harness component.
  *
  */
-gpii.test.couchdb.harness.clearInterval = function (that) {
-    if (that.monitorInterval) {
-        clearInterval(that.monitorInterval);
-        that.monitorInterval = false;
+gpii.test.couchdb.harness.clearTimeout = function (that) {
+    if (that.monitorTimeout) {
+        clearTimeout(that.monitorTimeout);
+        that.monitorTimeout = false;
     }
 };
 
@@ -292,23 +292,32 @@ gpii.test.couchdb.harness.clearInterval = function (that) {
  */
 gpii.test.couchdb.harness.startMonitoring = function (that) {
     if (that.options.monitorContainer) {
-        that.monitorInterval = setInterval(
-            function () {
-                var isUpPromise = that.worker.isUp();
-                isUpPromise.then(
-                    function (isUp) {
-                        fluid.log(fluid.logLevel.TRACE, "Container " + isUp ? "is" : "is not" + " up.");
-
-                        if (!isUp) {
-                            that.events.onCouchMissing.fire();
-                        }
-                    },
-                    fluid.fail
-                );
-            },
+        that.monitorTimeout = setTimeout(
+            that.monitorContainerOnce,
             that.options.containerMonitoringInterval
         );
     }
+};
+
+gpii.test.couchdb.harness.monitorContainerOnce = function (that) {
+    var isUpPromise = that.worker.isUp();
+    isUpPromise.then(
+        function (isUp) {
+            fluid.log(fluid.logLevel.TRACE, "Container " + isUp ? "is" : "is not" + " up.");
+
+            if (!isUp) {
+                that.events.onCouchMissing.fire();
+            }
+
+            // We use this pattern instead of setInterval to avoid piling up multiple checks.
+            setTimeout(
+                that.monitorContainerOnce,
+                that.options.containerMonitoringInterval
+            );
+        },
+        fluid.fail
+    );
+    return isUpPromise;
 };
 
 /**
@@ -354,7 +363,7 @@ fluid.defaults("gpii.test.couchdb.harness", {
     couchSetupCheckInterval: 500,
     couchSetupTimeout: 10000,
     members: {
-        monitorInterval: false
+        monitorTimeout: false
     },
     databases: {
     },
@@ -384,6 +393,10 @@ fluid.defaults("gpii.test.couchdb.harness", {
         onStartupComplete:        null
     },
     invokers: {
+        monitorContainerOnce: {
+            funcName: "gpii.test.couchdb.harness.monitorContainerOnce",
+            args:     ["{that}"]
+        },
         provisionDbs: {
             funcName: "fluid.promise.fireTransformEvent",
             args:     ["{that}.events.combinedDbSetup", "{arguments}.0"] // forceClean
@@ -436,13 +449,13 @@ fluid.defaults("gpii.test.couchdb.harness", {
             priority: "last",
             func:      "{that}.events.onStartupComplete.fire"
         },
-        "combinedShutdown.clearInterval": {
+        "combinedShutdown.clearTimeout": {
             priority: "first",
-            funcName: "gpii.test.couchdb.harness.clearInterval",
+            funcName: "gpii.test.couchdb.harness.clearTimeout",
             args:     ["{that}"]
         },
         "combinedShutdown.shutdownIfNeeded": {
-            priority: "after:clearInterval",
+            priority: "after:clearTimeout",
             funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
             args:     ["{that}"]
         },
@@ -450,8 +463,8 @@ fluid.defaults("gpii.test.couchdb.harness", {
             priority: "last",
             func:     "{that}.events.onShutdownComplete.fire"
         },
-        "onCouchMissing.clearInterval": {
-            funcName: "gpii.test.couchdb.harness.clearInterval",
+        "onCouchMissing.clearTimeout": {
+            funcName: "gpii.test.couchdb.harness.clearTimeout",
             args:     ["{that}"]
         }
     },
