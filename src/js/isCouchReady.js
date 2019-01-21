@@ -43,7 +43,7 @@ gpii.test.couchdb.checkCouchRepeatedly = function (options) {
         if (!couchReadyPromise.disposition) {
             couchReadyPromise.reject("Timed out waiting for CouchDB to be available.");
         }
-    }, options.couchSetupTimeout || 1000);
+    }, options.couchSetupTimeout || 30000);
     var interval = setInterval(function () {
         var singleCouchCheckPromise = gpii.test.couchdb.checkCouchOnce(options);
         singleCouchCheckPromise.then(

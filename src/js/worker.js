@@ -19,7 +19,7 @@ fluid.contextAware.makeChecks({
 fluid.defaults("gpii.test.couchdb.worker", {
     gradeNames: ["fluid.component", "fluid.contextAware"],
     couchSetupCheckInterval: 250,
-    couchSetupTimeout:5000,
+    couchSetupTimeout: 30000,
     couch: {
         port: 35984
     },
