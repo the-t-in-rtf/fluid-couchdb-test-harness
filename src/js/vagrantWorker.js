@@ -107,6 +107,8 @@ gpii.test.couchdb.worker.vagrant.startIfNeeded = function (that, isUp) {
 
 fluid.defaults("gpii.test.couchdb.worker.vagrant", {
     gradeNames: ["gpii.test.couchdb.worker"],
+    cwd: "@expand:fluid.module.resolvePath(that.options.cwdPath)",
+    cwdPath: "%gpii-couchdb-test-harness",
     commandTemplates: {
         vmStatus: "vagrant status --machine-readable",
         startup:  "vagrant up",
