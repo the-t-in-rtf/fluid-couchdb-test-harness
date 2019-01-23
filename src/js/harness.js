@@ -20,14 +20,8 @@ fluid.registerNamespace("gpii.test.couchdb.harness");
  */
 gpii.test.couchdb.harness.startIfNeeded = function (that, isCouchUp) {
     var startPromise = fluid.promise();
-    that.worker.isUp().then(function (workerIsUp) {
-        if (!workerIsUp  && isCouchUp) {
-            startPromise.reject("Cannot continue, an instance of CouchDB not controlled by our worker is listening on our port.");
-        }
-        else if (workerIsUp && !isCouchUp) {
-            startPromise.reject("Our container is up but Couch is not responding.  Can't continue.");
-        }
-        else if (isCouchUp) {
+    that.worker.isUp().then(function () {
+        if (isCouchUp) {
             startPromise.resolve("CouchDB is already running, no need to start it.");
         }
         else {
