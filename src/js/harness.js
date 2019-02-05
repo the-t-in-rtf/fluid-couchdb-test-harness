@@ -322,7 +322,7 @@ fluid.defaults("gpii.test.couchdb.harness", {
     removeContainer: false,
     containerMonitoringInterval: 500,
     couchSetupCheckInterval: 500,
-    couchSetupTimeout: 10000,
+    couchSetupTimeout: 20000,
     members: {
         monitorTimeout: false
     },
