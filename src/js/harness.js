@@ -314,39 +314,6 @@ gpii.test.couchdb.harness.monitorContainerOnce = function (that) {
     return isUpPromise;
 };
 
-/**
- *
- * Construct a promise-returning function that will detect when a couch instance is ready to respond to requests.
- *
- * @param {Object} that - The harness component.
- * @return {Function} - A `fluid.promise`-returning function.  The promise returned will be resolved when couch is available or rejected if the instance doesn't respond in time.
- *
- */
-gpii.test.couchdb.harness.constructCouchReadyPromise = function (that) {
-    return function () {
-        var couchReadyPromise = fluid.promise();
-        var timeout = setTimeout( function () {
-            if (!couchReadyPromise.disposition) {
-                couchReadyPromise.reject("Couch startup timed out.");
-            }
-        }, that.options.couchSetupTimeout);
-        var interval = setInterval(function () {
-            request.get(that.options.couch.baseUrl, function (error, response) {
-                if (!error && response.statusCode === 200) {
-                    clearTimeout(timeout);
-                    clearInterval(interval);
-                    couchReadyPromise.resolve();
-                }
-                else {
-                    fluid.log(fluid.logLevel.TRACE, "couch instance at '" + that.options.couch.baseUrl + "' not ready, waiting " + that.options.couchSetupCheckInterval + " ms and trying again.");
-                }
-            });
-        }, that.options.couchSetupCheckInterval);
-
-        return couchReadyPromise;
-    };
-};
-
 fluid.defaults("gpii.test.couchdb.harness", {
     gradeNames: ["fluid.component"],
     cleanDbs: true,

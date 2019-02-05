@@ -46,11 +46,6 @@ fluid.defaults("gpii.tests.harness.failure.testRunner", {
             funcName: "gpii.test.couchdb.checkCouchRepeatedly",
             args:     [{ couch: { baseUrl: "http://localhost:5050/" } } ]
         },
-        constructCouch: {
-            message:  "Test error handling in `gpii.test.couchdb.harness.constructCouchReadyPromise`.",
-            funcName: "gpii.test.couchdb.harness.constructCouchReadyPromise",
-            args:     [{ options: { couch: { port: 5050 }, couchSetupTimeout:250, couchSetupCheckInterval: 100 } }]
-        },
         dbCleaning: {
             message:  "Test error handling in `gpii.test.couchdb.harness.constructDbCleaningPromise`.",
             funcName: "gpii.test.couchdb.harness.constructDbCleaningPromise",

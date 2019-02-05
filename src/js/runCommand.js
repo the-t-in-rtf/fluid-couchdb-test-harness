@@ -25,6 +25,9 @@ gpii.test.couchdb.defaultCommandOptions = {
  */
 gpii.test.couchdb.runCommand = function (commandTemplate, commandPayload, callback, message, commandOptions) {
     var mergedCommandOptions = fluid.extend({}, gpii.test.couchdb.defaultCommandOptions, commandOptions);
+    var filteredCommandOptions = fluid.filterKeys(mergedCommandOptions, [
+        "cwd", "env", "encoding", "shell", "timeout", "maxBuffer", "killSignal", "uid", "gid", "windowsHide"
+    ]);
     if (message) {
         fluid.log(fluid.logLevel.TRACE, message);
     }
@@ -33,7 +36,7 @@ gpii.test.couchdb.runCommand = function (commandTemplate, commandPayload, callba
         commandTemplate,
         commandPayload
     );
-    exec(command, mergedCommandOptions, callback);
+    exec(command, filteredCommandOptions, callback);
 };
 
 /**
