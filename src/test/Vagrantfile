@@ -1,6 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+#
+# This Vagrantfile is used to spin up a VM that hosts a Docker CouchDB container.  It is intended for use in
+# environments such as Windows 7 where it is more difficult to run Docker directly.  See the README in this
+# package for usage instructions.
+#
+
 # Docker image to use for CouchDB
 docker_image = "couchdb"
 

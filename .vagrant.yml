@@ -1,0 +1,27 @@
+# QI Configuration file, see: https://github.com/amatas/vagrant-gpii-ci
+---
+env:
+  vms:
+    linux:
+      cpu: 2                   # number of cpus
+      memory: 2048             # amount of RAM memory (in Mb)
+      clone: true              # use the linked_clone Vagrant feature
+      autostart: true
+      box: inclusivedesign/fedora28
+
+# Stages to perform when 'ci test' command is invoked
+stages:
+  - setup
+  - test
+
+setup_job:
+  stage: setup
+  script:
+    - sudo dnf install -y nodejs automake gcc-c++ nodejs-devel
+    - sudo npm install -g grunt-cli node-gyp
+
+test_job:
+  stage: test
+  script:
+    - npm install
+    - npm test

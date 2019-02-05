@@ -5,6 +5,8 @@ var gpii = fluid.registerNamespace("gpii");
 var readline = require("readline");
 var stream   = require("stream");
 
+require("../../");
+
 fluid.registerNamespace("gpii.test.couchdb.worker.vagrant");
 
 /**
@@ -78,7 +80,7 @@ gpii.test.couchdb.worker.vagrant.parseVagrantOutput = function (rawOutput) {
 gpii.test.couchdb.worker.vagrant.isUp = function (that) {
     var isUpPromise = fluid.promise();
 
-    var vagrantStatusPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.vmStatus, that.options, "Checking Vagrant status.");
+    var vagrantStatusPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.vmStatus, that.options, "Checking Vagrant status.", that.options);
     vagrantStatusPromise.then(
         function (commandOutput) {
             gpii.test.couchdb.worker.vagrant.parseVagrantOutput(commandOutput).then(
@@ -101,14 +103,14 @@ gpii.test.couchdb.worker.vagrant.isUp = function (that) {
 
 gpii.test.couchdb.worker.vagrant.startIfNeeded = function (that, isUp) {
     if (!isUp) {
-        return gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.startup, that.options, "Starting Vagrant VM.");
+        return gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.startup, that.options, "Starting Vagrant VM.", that.options);
     }
 };
 
 fluid.defaults("gpii.test.couchdb.worker.vagrant", {
     gradeNames: ["gpii.test.couchdb.worker"],
-    cwd: "@expand:fluid.module.resolvePath(that.options.cwdPath)",
-    cwdPath: "%gpii-couchdb-test-harness",
+    cwd: "@expand:fluid.module.resolvePath({that}.options.cwdPath)",
+    cwdPath: "%gpii-couchdb-test-harness/src/test",
     commandTemplates: {
         vmStatus: "vagrant status --machine-readable",
         startup:  "vagrant up",
@@ -124,7 +126,7 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
         "combinedShutdown.stopOrRemoveContainers": {
             priority: "after:listContainers",
             funcName: "gpii.test.couchdb.runCommandAsPromise",
-            args:     ["{that}.options.commandTemplates.shutdown", "{that}.options", "Halting VM"]
+            args:     ["{that}.options.commandTemplates.shutdown", "{that}.options", "Halting VM", "{that}.options"]
         },
         "combinedShutdown.fireEvent": {
             func: "{that}.events.onShutdownComplete.fire"
