@@ -95,9 +95,12 @@ gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbN
             // TODO: Once we only support CouchDB 2.2 or higher, we can get metadata for all endpoints at once:
             // See: http://docs.couchdb.org/en/stable/api/server/common.html#post--_dbs_info
             fluid.log(fluid.logLevel.TRACE, "Requesting metadata for database: ", dbUrl);
-            request.get(dbUrl, function (error, response) {
+            request.get(dbUrl, function (error, response, body) {
                 if (error) {
                     dbProvisioningPromise.reject(error);
+                }
+                else if ([200, 404].indexOf(response.statusCode) === -1) {
+                    dbProvisioningPromise.reject(body);
                 }
                 else {
                     var provisioningPromises = [];
@@ -190,9 +193,12 @@ gpii.test.couchdb.harness.constructDbCreationPromise = function (dbUrl) {
         var dbCreationPromise = fluid.promise();
 
         fluid.log(fluid.logLevel.TRACE, "Starting creating database: ", dbUrl);
-        request.put(dbUrl, function (error) {
+        request.put(dbUrl, function (error, response, body) {
             if (error) {
                 dbCreationPromise.reject(error);
+            }
+            else if ([200,201].indexOf(response.statusCode) === -1) {
+                dbCreationPromise.reject(body);
             }
             else {
                 dbCreationPromise.resolve();
@@ -322,7 +328,6 @@ fluid.defaults("gpii.test.couchdb.harness", {
     removeContainer: false,
     containerMonitoringInterval: 500,
     couchSetupCheckInterval: 500,
-    couchSetupTimeout: 20000,
     members: {
         monitorTimeout: false
     },
