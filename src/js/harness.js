@@ -173,7 +173,9 @@ gpii.test.couchdb.harness.constructDbCleaningPromise = function (dbUrl) {
             }
             else {
                 fluid.log(fluid.logLevel.TRACE, "Finished deleting existing content for database: ", dbUrl);
-                singleDbCleaningPromise.resolve();
+
+                // Delay resolving the promise to give CouchDB enough time to actually be ready to recreate it.
+                setTimeout(singleDbCleaningPromise.resolve, 64);
             }
         });
         return singleDbCleaningPromise;
