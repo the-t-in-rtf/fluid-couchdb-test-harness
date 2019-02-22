@@ -153,8 +153,13 @@ fluid.defaults("gpii.test.couchdb.worker.docker", {
         "combinedShutdown.fireEvent": {
             func: "{that}.events.onShutdownComplete.fire"
         },
-        "combinedStartup.listContainers": {
+        "combinedStartup.log": {
             priority: "first",
+            funcName: "fluid.log",
+            args:     ["Running using 'docker' worker."]
+        },
+        "combinedStartup.listContainers": {
+            priority: "after:log",
             func:     "{that}.listContainers"
         },
         "combinedStartup.startIfNeeded": {

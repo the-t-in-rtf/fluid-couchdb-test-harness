@@ -5,6 +5,7 @@ var process = require("process");
 
 require("./dockerWorker");
 require("./vagrantWorker");
+require("./externalWorker");
 
 fluid.registerNamespace("gpii.test.couchdb.worker");
 
@@ -14,6 +15,14 @@ gpii.test.couchdb.worker.useVagrant = function () {
 
 fluid.contextAware.makeChecks({
     "gpii.test.couchdb.useVagrant": "gpii.test.couchdb.worker.useVagrant"
+});
+
+gpii.test.couchdb.worker.useExternal = function () {
+    return fluid.get(process, "env.GPII_TEST_COUCH_USE_EXTERNAL") ? true : false;
+};
+
+fluid.contextAware.makeChecks({
+    "gpii.test.couchdb.useExternal": "gpii.test.couchdb.worker.useExternal"
 });
 
 fluid.defaults("gpii.test.couchdb.worker", {
@@ -30,6 +39,10 @@ fluid.defaults("gpii.test.couchdb.worker", {
                 useVagrant: {
                     contextValue: "{gpii.test.couchdb.useVagrant}",
                     gradeNames: "gpii.test.couchdb.worker.vagrant"
+                },
+                useExternal: {
+                    contextValue: "{gpii.test.couchdb.useExternal}",
+                    gradeNames: "gpii.test.couchdb.worker.external"
                 }
             }
         }

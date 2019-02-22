@@ -131,8 +131,13 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
         "combinedShutdown.fireEvent": {
             func: "{that}.events.onShutdownComplete.fire"
         },
-        "combinedStartup.isUp": {
+        "combinedStartup.log": {
             priority: "first",
+            funcName: "fluid.log",
+            args:     ["Running using 'vagrant' worker."]
+        },
+        "combinedStartup.isUp": {
+            priority: "after:log",
             func:     "{that}.isUp"
         },
         "combinedStartup.startIfNeeded": {
