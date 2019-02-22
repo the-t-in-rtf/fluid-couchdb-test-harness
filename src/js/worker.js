@@ -30,7 +30,7 @@ fluid.defaults("gpii.test.couchdb.worker", {
     couchSetupCheckInterval: 250,
     couchSetupTimeout: 30000,
     couch: {
-        port: 35984
+        port: 25984
     },
     contextAwareness: {
         useVagrant: {

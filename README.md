@@ -16,7 +16,7 @@ The harness provided by this package can be run in one of three modes:
    to run manual commands against the created Vagrant VM, you will need to issue the commands from the src/test
    subdirectory containing the relevant Vagrantfile.
 3. If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
-   tests in this package (35984) and set the `GPII_TEST_COUCH_USE_EXTERNAL` environment variable.
+   tests in this package (25984) and set the `GPII_TEST_COUCH_USE_EXTERNAL` environment variable.
 
 ## Running the Tests
 
