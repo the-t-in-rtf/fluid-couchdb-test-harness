@@ -17,7 +17,8 @@
     },
     "homepage": "https://github.com/GPII/gpii-couchdb-test-harness#readme",
     "dependencies": {
-        "infusion": "3.0.0-dev.20181030T133624Z.f977b0fa9"
+        "infusion": "3.0.0-dev.20181030T133624Z.f977b0fa9",
+        "request": "2.88.0"
     },
     "devDependencies": {
         "eslint": "5.9.0",
@@ -26,7 +27,6 @@
         "grunt": "1.0.3",
         "kettle": "1.8.1",
         "node-jqunit": "1.1.8",
-        "nyc": "13.1.0",
-        "request": "2.88.0"
+        "nyc": "13.1.0"
     }
 }

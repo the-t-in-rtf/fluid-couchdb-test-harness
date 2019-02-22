@@ -2,26 +2,60 @@
 ---
 env:
   vms:
-    linux:
+# TODO: All the commented out bits are here to work through multi-platform issues with Alfredo.
+#    linux:
+#      cpu: 2                   # number of cpus
+#      memory: 2048             # amount of RAM memory (in Mb)
+#      clone: true              # use the linked_clone Vagrant feature
+#      autostart: true
+#      tags:
+#        - linux
+#      box: inclusivedesign/fedora28
+    windows:
       cpu: 2                   # number of cpus
       memory: 2048             # amount of RAM memory (in Mb)
       clone: true              # use the linked_clone Vagrant feature
       autostart: true
-      box: inclusivedesign/fedora28
+#      tags:
+#        - windows
+      box: inclusivedesign/windows10-eval-x64-Apps
 
 # Stages to perform when 'ci test' command is invoked
 stages:
-  - setup
-  - test
+#  - setup_linux
+#  - test_linux
+  - setup_windows
+  - test_windows
 
-setup_job:
-  stage: setup
-  script:
-    - sudo dnf install -y nodejs automake gcc-c++ nodejs-devel
-    - sudo npm install -g grunt-cli node-gyp
+#setup_linux_job:
+#  stage: setup_linux
+#  tags:
+#    - linux
+#  script:
+#    - sudo dnf install -y nodejs automake gcc-c++ nodejs-devel
+#    - sudo npm install -g grunt-cli node-gyp
+#
+#test_linux_job:
+#  stage: test_linux
+#  script:
+#    - npm install
+#    - npm test
 
-test_job:
-  stage: test
+setup_windows_job:
+  stage: setup_windows
+#  tags:
+#    -windows
   script:
-    - npm install
-    - npm test
+  - choco install nodejs-lts -y
+  - choco install chromedriver -y
+  - choco install wget -y
+  - "do.ps1 -c 'cd /users/vagrant/downloads && wget http://dl.bintray.com/apache/couchdb/win/2.3.0/couchdb-2.3.0.msi'"
+  - "do.ps1 -c 'cd /users/vagrant/downloads && msiexec.exe /i couchdb-2.3.0.msi /passive'"
+  - "do.ps1 -c 'v: && npm install && node provisioning/configureCouch.js'"
+
+test_windows_job:
+  stage: test_windows # name of the stage
+#  tags:
+#    -windows
+  script:              # One line per command to execute
+  - "do.ps1 -c 'set GPII_TEST_COUCH_USE_EXTERNAL=true && v: && npm test'"

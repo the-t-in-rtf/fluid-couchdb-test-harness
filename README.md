@@ -18,6 +18,24 @@ The harness provided by this package can be run in one of three modes:
 3. If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
    tests in this package (35984) and set the `GPII_TEST_COUCH_USE_EXTERNAL` environment variable.
 
+## Running the Tests
+
+To run the tests for this package on a local machine, you must have either Docker, Vagrant, or a local instance of
+CouchDB installed (see above).  To run tests locally, use the command `npm test`.
+
+You can also run the tests in a Vagrant VM.  You will need to have both Vagrant and the
+[Vagrant GPII CI plugin](https://github.com/gpii-ops/vagrant-gpii-ci) installed.
+
+To run the tests for this package in a linux VM using Docker and the official Apache CouchDB image, use commands like:
+
+`vagrant up linux`
+`vagrant ci test linux`
+
+To run the tests for this package in a Windows 10 VM using a standalone instance of CouchDB, use commands like:
+
+`vagrant up windows`
+`vagrant ci test windows`
+
 ## More Information
 
 1. [More information about the test fixtures provided by this package.](./docs/test-fixtures.md)
