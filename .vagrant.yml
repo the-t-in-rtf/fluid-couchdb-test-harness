@@ -1,50 +1,50 @@
 # QI Configuration file, see: https://github.com/amatas/vagrant-gpii-ci
 ---
 env:
+  default: &default
+    cpu: 2                 # number of cpus
+    memory: 2048           # amount of RAM memory
+    clone: true            # use the linked_clone Vagrant feature
+    autostart: false       # only start a VM when it's specfied in the command line
   vms:
-# TODO: All the commented out bits are here to work through multi-platform issues with Alfredo.
-#    linux:
-#      cpu: 2                   # number of cpus
-#      memory: 2048             # amount of RAM memory (in Mb)
-#      clone: true              # use the linked_clone Vagrant feature
-#      autostart: true
-#      tags:
-#        - linux
-#      box: inclusivedesign/fedora28
+    linux:
+      <<: *default         # shared defaults
+      tags:
+        - linux
+      box: inclusivedesign/fedora28
     windows:
-      cpu: 2                   # number of cpus
-      memory: 2048             # amount of RAM memory (in Mb)
-      clone: true              # use the linked_clone Vagrant feature
-      autostart: true
-#      tags:
-#        - windows
+      <<: *default         # shared defaults
+      tags:
+        - windows
       box: inclusivedesign/windows10-eval-x64-Apps
 
 # Stages to perform when 'ci test' command is invoked
 stages:
-#  - setup_linux
-#  - test_linux
+  - setup_linux
+  - test_linux
   - setup_windows
   - test_windows
 
-#setup_linux_job:
-#  stage: setup_linux
-#  tags:
-#    - linux
-#  script:
-#    - sudo dnf install -y nodejs automake gcc-c++ nodejs-devel
-#    - sudo npm install -g grunt-cli node-gyp
-#
-#test_linux_job:
-#  stage: test_linux
-#  script:
-#    - npm install
-#    - npm test
+setup_linux_job:
+  stage: setup_linux
+  tags:
+    - linux
+  script:
+    - sudo dnf install -y nodejs automake gcc-c++ nodejs-devel
+    - sudo npm install -g grunt-cli node-gyp
+
+test_linux_job:
+  stage: test_linux
+  tags:
+  - linux
+  script:
+    - npm install
+    - npm test
 
 setup_windows_job:
   stage: setup_windows
-#  tags:
-#    -windows
+  tags:
+    - windows
   script:
   - choco install nodejs-lts -y
   - choco install chromedriver -y
@@ -55,7 +55,7 @@ setup_windows_job:
 
 test_windows_job:
   stage: test_windows # name of the stage
-#  tags:
-#    -windows
+  tags:
+    - windows
   script:              # One line per command to execute
   - "do.ps1 -c 'set GPII_TEST_COUCH_USE_EXTERNAL=true && v: && npm test'"
