@@ -20,15 +20,21 @@ fluid.registerNamespace("gpii.test.couchdb.harness");
  */
 gpii.test.couchdb.harness.startIfNeeded = function (that, isCouchUp) {
     var startPromise = fluid.promise();
-    that.worker.isUp().then(function () {
-        if (isCouchUp) {
-            startPromise.resolve("CouchDB is already running, no need to start it.");
-        }
-        else {
-            var innerStartPromise = that.worker.startup();
-            innerStartPromise.then(startPromise.resolve, startPromise.reject);
-        }
-    }, startPromise.reject);
+    // If our worker has already been destroyed, startup is not needed.
+    if (that.worker.lifecycleStatus === "destroyed") {
+        startPromise.resolve("Our worker has been destroyed, aborting startup.");
+    }
+    else {
+        that.worker.isUp().then(function () {
+            if (isCouchUp) {
+                startPromise.resolve("CouchDB is already running, no need to start it.");
+            }
+            else {
+                var innerStartPromise = that.worker.startup();
+                innerStartPromise.then(startPromise.resolve, startPromise.reject);
+            }
+        }, startPromise.reject);
+    }
     return startPromise;
 };
 
