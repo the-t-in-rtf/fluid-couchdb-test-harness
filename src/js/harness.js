@@ -21,7 +21,7 @@ fluid.registerNamespace("gpii.test.couchdb.harness");
 gpii.test.couchdb.harness.startIfNeeded = function (that, isCouchUp) {
     var startPromise = fluid.promise();
     // If our worker has already been destroyed, startup is not needed.
-    if (that.worker.lifecycleStatus === "destroyed") {
+    if (fluid.isDestroyed(that.worker)) {
         startPromise.resolve("Our worker has been destroyed, aborting startup.");
     }
     else {
