@@ -1,5 +1,5 @@
 /* eslint-env node */
-/* Tests for the "pouch" module */
+/* Basic CRUD tests for the CouchDB test harness. */
 "use strict";
 var fluid = require("infusion");
 fluid.logObjectRenderChars = 20480;

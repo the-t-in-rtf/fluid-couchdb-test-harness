@@ -116,7 +116,7 @@ fluid.defaults("gpii.test.couchdb.worker.docker", {
     containerName: {
         expander: {
             funcName: "fluid.stringTemplate",
-            args:     ["gpii-pouch-docker-harness-%id", { id: "{that}.id" }]
+            args:     ["gpii-couchdb-test-harness-%id", { id: "{that}.id" }]
         }
     },
     commandTemplates: {

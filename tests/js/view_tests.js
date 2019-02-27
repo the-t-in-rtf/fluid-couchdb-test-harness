@@ -1,5 +1,5 @@
 /* eslint-env node */
-/* Tests for the "pouch" module */
+/* Testing the use of views with the CouchDB instance (to confirm indexing, etc. is working). */
 "use strict";
 var fluid = require("infusion");
 fluid.logObjectRenderChars = 20480;
