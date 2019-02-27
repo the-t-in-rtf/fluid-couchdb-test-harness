@@ -56,7 +56,10 @@ gpii.test.couchdb.runCommandAsPromise = function (commandTemplate, commandPayloa
     try {
         gpii.test.couchdb.runCommand(commandTemplate, commandPayload, function (error, stdout) {
             if (error) {
-                commandPromise.reject(error);
+                // Neither the "message" or "stack" property of the error survive the eventual trip
+                // through JSON.stringify, so we need to manually shove the output of toString into a
+                // combined error payload so that the root cause of an error is included in the logs.
+                commandPromise.reject(fluid.extend(error, { message: error.toString() }));
             }
             else {
                 commandPromise.resolve(stdout);
