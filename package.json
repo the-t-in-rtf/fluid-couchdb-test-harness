@@ -17,7 +17,7 @@
     },
     "homepage": "https://github.com/GPII/gpii-couchdb-test-harness#readme",
     "dependencies": {
-        "infusion": "3.0.0-dev.20181030T133624Z.f977b0fa9",
+        "infusion": "3.0.0-dev.20190507T155813Z.4781871fd.FLUID-6148",
         "request": "2.88.0"
     },
     "devDependencies": {

@@ -344,7 +344,12 @@ fluid.defaults("gpii.test.couchdb.harness", {
     couch: {
         port:      25984,
         hostname:  "localhost",
-        baseUrl:   "@expand:fluid.stringTemplate({that}.options.templates.couchBaseUrl, {that}.options.couch)",
+        baseUrl:   {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args: ["{that}.options.templates.couchBaseUrl", { hostname: "{that}.options.couch.hostname", port: "{that}.options.couch.port"}]
+            }
+        },
         allDbsUrl: {
             expander: {
                 funcName: "fluid.stringTemplate",
