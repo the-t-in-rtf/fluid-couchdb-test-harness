@@ -51,7 +51,11 @@ gpii.test.couchdb.checkCouchRepeatedly = function (options) {
                 if (isUp) {
                     clearTimeout(timeout);
                     clearInterval(interval);
-                    couchReadyPromise.resolve();
+
+                    // Workaround for GPII-3989 to reduce the frequency of double promise resolution.
+                    if (!couchReadyPromise.disposition) {
+                        couchReadyPromise.resolve();
+                    }
                 }
             },
             couchReadyPromise.reject
