@@ -29,3 +29,15 @@ fluid.defaults("gpii.test.couchdb.worker.external", {
         }
     }
 });
+
+// We have no reasonable way to install couchdb-lucene for external use in CI, so blow up if someone tries to run those
+// tests.
+fluid.defaults("gpii.test.couchdb.lucene.worker.external", {
+    gradeNames: ["gpii.test.couchdb.worker"],
+    listeners: {
+        "onCreate.explode": {
+            funcName: "fluid.fail",
+            args: ["The lucene test harness can only be used with Docker."]
+        }
+    }
+});

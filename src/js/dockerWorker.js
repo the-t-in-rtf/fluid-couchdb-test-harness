@@ -5,7 +5,7 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.test.couchdb.worker.docker");
 
 require("./runCommand");
-require("./isCouchReady");
+require("./checkUrl");
 
 /**
  *
@@ -15,7 +15,7 @@ require("./isCouchReady");
  * @return {Promise} - A `fluid.promise` that will be resolved with `true` if a container is running, resolved with `false` if no container is running, or rejected if there is an error checking the container status.
  *
  */
-gpii.test.couchdb.worker.docker.isUp = function (that) {
+gpii.test.couchdb.worker.docker.isContainerUp = function (that) {
     var isUpPromise = fluid.promise();
 
     var containerListPromise = that.listContainers();
@@ -23,9 +23,15 @@ gpii.test.couchdb.worker.docker.isUp = function (that) {
         function (containerListOutput) {
             var containerEntries = gpii.test.couchdb.worker.docker.parseDockerOutput(containerListOutput);
             var runningContainer = fluid.find(containerEntries, function (containerEntry) {
-                return containerEntry.Status.indexOf("Up") === 0 ? containerEntry.ID : undefined;
+                return containerEntry.Status.indexOf("Up") === 0 ? containerEntry : undefined;
             });
-            isUpPromise.resolve(runningContainer ? true : false);
+            if (runningContainer) {
+                that.containerName = runningContainer.Names;
+                isUpPromise.resolve(true);
+            }
+            else {
+                isUpPromise.resolve(false);
+            }
         },
         isUpPromise.reject
     );
@@ -44,36 +50,15 @@ gpii.test.couchdb.worker.docker.parseDockerOutput = function (rawOutput) {
     return containerEntries;
 };
 
-gpii.test.couchdb.worker.docker.startIfNeeded = function (that, listContainerOutput) {
+gpii.test.couchdb.worker.docker.startIfNeeded = function (that, containerIsUp) {
     var outerStartupPromise = fluid.promise();
 
-    var containerData = gpii.test.couchdb.worker.docker.parseDockerOutput(listContainerOutput);
-
-    // Examine the containers to see if there are running or stopped containers.
-    var runningContainerId = false;
-    var exitedContainerId = false;
-
-    fluid.each(containerData, function (containerEntry) {
-        // "Status":"Up 2 seconds"
-        if (containerEntry.Status.indexOf("Up") === 0) {
-            runningContainerId = containerEntry.ID;
-        }
-        // "Status":"Exited (143) 5 minutes ago"
-        else if (containerEntry.Status.indexOf("Exited") === 0) {
-            exitedContainerId = containerEntry.ID;
-        }
-    });
-
-    if (runningContainerId) {
+    if (containerIsUp) {
         fluid.log("Container already running, worker does not need to start anything.");
         outerStartupPromise.resolve("Container already running.");
     }
-    else if (exitedContainerId) {
-        var containerStartupPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.startContainer, { containerId: exitedContainerId });
-        containerStartupPromise.then(outerStartupPromise.resolve, outerStartupPromise.reject);
-    }
     else {
-        var containerCreationPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.createContainer, that.options);
+        var containerCreationPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.createContainer, that);
         containerCreationPromise.then(outerStartupPromise.resolve, outerStartupPromise.reject);
     }
 
@@ -113,29 +98,31 @@ gpii.test.couchdb.worker.docker.stopOrRemoveContainers = function (that, listCon
 fluid.defaults("gpii.test.couchdb.worker.docker", {
     gradeNames: ["fluid.component"],
     containerLabel: "gpii-couchdb-test-harness",
-    containerName: {
-        expander: {
-            funcName: "fluid.stringTemplate",
-            args:     ["gpii-couchdb-test-harness-%id", { id: "{that}.id" }]
+    members: {
+        containerName: {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args:     ["gpii-couchdb-test-harness-%id", { id: "{that}.id" }]
+            }
         }
     },
     commandTemplates: {
-        listContainers:  "docker ps -a --filter label=%containerLabel --format '{{ json . }}'",
-        createContainer: "docker run -d -l %containerLabel -p %couch.port:5984 --name %containerName couchdb",
+        listContainers:  "docker ps -a --filter label=%options.containerLabel --format '{{ json . }}'",
+        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5984 --name %containerName couchdb",
         startContainer:  "docker start %containerId",
         removeContainer: "docker rm -f %containerId",
         stopContainer:   "docker stop %containerId"
     },
     invokers: {
         isUp: {
-            funcName: "gpii.test.couchdb.worker.docker.isUp",
+            funcName: "gpii.test.couchdb.worker.docker.isContainerUp",
             args:     ["{that}"]
         },
         listContainers: {
             funcName: "gpii.test.couchdb.runCommandAsPromise",
             args: [
                 "{that}.options.commandTemplates.listContainers",
-                "{that}.options",
+                "{that}",
                 "Retrieving list of docker containers."
             ]
         }
@@ -158,23 +145,36 @@ fluid.defaults("gpii.test.couchdb.worker.docker", {
             funcName: "fluid.log",
             args:     ["Running using 'docker' worker."]
         },
-        "combinedStartup.listContainers": {
+        "combinedStartup.isUp": {
             priority: "after:log",
-            func:     "{that}.listContainers"
+            func:     "{that}.isUp"
         },
         "combinedStartup.startIfNeeded": {
-            priority: "after:listContainers",
+            priority: "after:isUp",
             funcName: "gpii.test.couchdb.worker.docker.startIfNeeded",
-            args:     ["{that}", "{arguments}.0"] // listContainerOutput
-        },
-        "combinedStartup.waitForCouch": {
-            priority: "after:startIfNeeded",
-            funcName: "gpii.test.couchdb.checkCouchOnce",
-            args:     ["{that}.options"]
+            args:     ["{that}", "{arguments}.0"] // isUp
         },
         "combinedStartup.fireEvent": {
             priority: "last",
             func: "{that}.events.onStartupComplete.fire"
         }
+    }
+});
+
+fluid.defaults("gpii.test.couchdb.lucene.worker.docker", {
+    gradeNames: ["gpii.test.couchdb.worker.docker"],
+    containerLabel: "gpii-couchdb-lucene-test-harness",
+    members: {
+        containerName: {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args:     ["gpii-couchdb-lucene-test-harness-%id", { id: "{that}.id" }]
+            }
+        },
+        couchContainerName: ""
+    },
+    commandTemplates: {
+        listContainers:  "docker ps -a --filter label=%options.containerLabel --format '{{ json . }}'",
+        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5985 --link %couchContainerName:couchdb --name %containerName klaemo/couchdb-lucene:2.1.0"
     }
 });

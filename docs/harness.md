@@ -10,23 +10,17 @@ The CouchDB harness provided by this package:
 
 ### Component Options
 
-| Option                        | Type        | Description |
-| ----------------------------- | ----------- | ----------- |
-| `cleanDbs`                    | `{Boolean}` | Whether to remove CouchDB data when the database is provisioned. Defaults to `true`. |
-| `containerMonitoringInterval` | `{Integer}` | This component will shut itself down if its associated Docker container dies or is stopped.  This setting controls how often (in milliseconds) to check to see if the container is up.  Defaults to `1000`, or one second. |
-| `couch.allDbsUrl`             | `{String}`  | The URL on which the `_all_dbs` REST API endpoint for CouchDB can be reached.  Expanded from the baseUrl by default. |
-| `couch.baseUrl`               | `{String}`  | The URL on which CouchDB can be reached.  Expanded from the hostname and port by default. |
-| `couch.hostname`              | `{String}`  | The hostname CouchDB is expected to be running on. Defaults to `localhost`. |
-| `couch.port`                  | `{Integer}` | The port CouchDB is expected to be running on. Defaults to `25984`. |
-| `couchSetupCheckInterval`     | `{Integer}` | If we have to create a new container, we have to wait until Couch is responding to requests.  This setting controls how often (in milliseconds) to check to see if CouchDB is up. Defaults to `250`. |
-| `couchSetupTimeout`           | `{Integer}` | How long (in milliseconds) to wait for the above health checks to complete before triggering a failure. Defaults to `5000`, or 5 seconds. |
-| `databases`                   | `{Array}`   | A map of databases and data files to provision them with.  See below. |
-| `monitorContainer`            | `{Boolean}` | Whether or not to monitor the worker's container.  Can be used to keep the process alive, but set to `false` by default. |
-| `shutdownContainer`           | `{Boolean}` | Whether or not to shut down the container when the harness is shut down.  Set to `false` by default, i. e. the same container is reused without restarting between runs. |
-| `removeContainer`             | `{Boolean}` | Whether or not to remove the container on harness shutdown. Set to `false` by default. |
-| `templates.couchBaseUrl`      | `{String}`  | A template that (along with our options) will be passed to `fluid.stringTemplate` when expanding the `couch.baseUrl` setting. |
-| `templates.couchAllDbsUrl`    | `{String}`  | A template that (along with our options) will be passed to `fluid.stringTemplate` when expanding the `couch.allDbsUrl` setting. |
-| `templates.couchDbUrl`        | `{String}`  | A template that (along with our options) will be passed to `fluid.stringTemplate` when attempting to access individual databases. |
+| Option               | Type        | Description |
+| -------------------- | ----------- | ----------- |
+| `cleanDbs`           | `{Boolean}` | Whether to remove CouchDB data when the database is provisioned. Defaults to `true`. |
+| `couch.hostname`     | `{String}`  | The hostname CouchDB is expected to be running on. Defaults to `localhost`. |
+| `couch.port`         | `{Integer}` | The port CouchDB is expected to be running on. Defaults to `25984`. |
+| `setupCheckInterval` | `{Integer}` | If we have to create new container(s), we have to wait until they are responding to requests.  This setting controls how often (in milliseconds) to check to see if the container is up. Defaults to `250`. |
+| `setupTimeout`       | `{Integer}` | How long (in milliseconds) to wait for the above health checks to complete before triggering a failure. Defaults to `5000`, or 5 seconds. |
+| `databases`          | `{Array}`   | A map of databases and data files to provision them with.  See below. |
+| `shutdownContainers` | `{Boolean}` | Whether or not to shut down any associated container(s) when the harness is shut down.  Set to `false` by default, i. e. the same container is reused without restarting between runs. |
+| `removeContainers`   | `{Boolean}` | Whether or not to remove any associated container(s) on harness shutdown. Set to `false` by default. |
+| `templates.dbUrl`    | `{String}`  | A template that (along with our options) will be passed to `fluid.stringTemplate` when attempting to provision individual databases. |
 
 ### The `databases` Option
 
@@ -115,11 +109,26 @@ This invoker triggers the complex ["promise chaining event"](https://docs.fluidp
 You can add your own shutdown steps using additional event listeners.  For more details, see the "Promise Chaining
 Events" section below.
 
-### `gpii.test.couchdb.harness.persistent`
+## `gpii.test.couchdb.harness.persistent`
 
 This is a convenience grade that matches the previous grade structure of this package. It is identical to
 `gpii.test.couchdb.harness` but has `options.cleanOnStartup` set to `false`.  If you use this grade and need to reset the data,
 you must manually call `{that}.provisionDbs()` (see above).
+
+## `gpii.test.couchdb.harness.lucene`
+
+A harness that starts both a CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene) instance for use in
+Fluid IoC tests.
+
+### Component Options
+
+In addition to the options for `gpii.test.couchdb.harness` above, this grade has the following unique options:
+
+| Option            | Type        | Description |
+| ----------------- | ----------- | ----------- |
+| `lucene.hostname` | `{String}`  | The hostname couchdb-lucene is expected to be running on. Defaults to `localhost`. |
+| `lucene.port`     | `{Integer}` | The port couchdb-lucene is expected to be running on. Defaults to `25985`. |
+
 
 ### Promise Chaining Events
 

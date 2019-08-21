@@ -17,8 +17,7 @@ jqUnit.module("Failure mode tests for promise-returning functions.");
 fluid.registerNamespace("gpii.tests.harness.failure");
 
 gpii.tests.harness.failure.testSingleTestDef = function (testDef) {
-    jqUnit.test(testDef.message, function () {
-        jqUnit.stop();
+    jqUnit.asyncTest(testDef.message, function () {
         var promiseOrFn = fluid.invokeGlobalFunction(testDef.funcName, testDef.args);
         var promise = typeof promiseOrFn === "function" ? promiseOrFn() : promiseOrFn;
         promise.then(
@@ -41,10 +40,10 @@ gpii.tests.harness.failure.runTests = function (that) {
 fluid.defaults("gpii.tests.harness.failure.testRunner", {
     gradeNames: ["fluid.component"],
     testDefs: {
-        checkCouchRepeatedly: {
-            message:  "Test error handling in `gpii.test.couchdb.checkCouchRepeatedly`.",
-            funcName: "gpii.test.couchdb.checkCouchRepeatedly",
-            args:     [{ couch: { baseUrl: "http://localhost:5050/" } } ]
+        checkUrlRepeatedly: {
+            message:  "Test error handling in `gpii.test.couchdb.checkUrlRepeatedly`.",
+            funcName: "gpii.test.couchdb.checkUrlRepeatedly",
+            args:     [{ baseUrl: "http://localhost:5050/", setupTimeout: 500  } ]
         },
         dbCleaning: {
             message:  "Test error handling in `gpii.test.couchdb.harness.constructDbCleaningPromise`.",

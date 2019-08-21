@@ -5,8 +5,8 @@ Framework](https://docs.fluidproject.org/infusion/development/IoCTestingFramewor
 
 ## `gpii.test.couchdb.testEnvironment`
 
-The test environment provided by this package, which configured [the harness provided by this package](./harness.md) for
-use in Fluid IoC Tests.
+The CouchDB test environment provided by this package, which configures [the harness provided by this package](./harness.md)
+for use in Fluid IoC Tests.
 
 ### Component Options
 
@@ -16,9 +16,23 @@ use in Fluid IoC Tests.
 | `couch.hostname` | `{String}`  | The hostname on which CouchDB is running.  Defaults to `localhost`. |
 | `databases`      | `{Object}`  | The databases to create and provision.  See [the harness docs](./harness.md) for details. |
 
+## `gpii.test.couchdb.testEnvironment.lucene`
+
+A test environment that provides both CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene).  Uses 
+[the `gpii.test.couchdb.harness.lucene` grade provided by this package](./harness.md).
+
+### Component Options
+
+| Option           | Type        | Description |
+| ---------------- | ----------- | ----------- |
+| `couch.port`     | `{Integer}` | The port on which CouchDB will be available.  Defaults to `25984`. |
+| `couch.hostname` | `{String}`  | The hostname on which CouchDB is running.  Defaults to `localhost`. |
+| `databases`      | `{Object}`  | The databases to create and provision.  See [the harness docs](./harness.md) for details. |
+
+
 ## `gpii.test.couchdb.caseHolder`
 
-A test case holder intended for use with the above test environment.  It:
+A test case holder intended for use with both of the above test environments.  It:
 
 1. Starts the harness and waits for it to indicate that it's ready to respond to requests.
 2. Runs any configured test sequence steps.

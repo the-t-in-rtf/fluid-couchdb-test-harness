@@ -8,25 +8,26 @@ fluid.registerNamespace("gpii.test.couchdb");
 
 /**
  *
- * Check to see if CouchDB is up.
+ * Check to see if a URL served by a worker is responding to requests.
  *
  * @param {Object} options - The options to use when checking to see if CouchDB is up, notably `couch.baseUrl`.
  * @return {Promise} - A `fluid.promise` instance that will be resolved when the check is complete or rejected on error.  The promise will be resolved with `true` if CouchDB is reachable, and `false` otherwise.
+ *
  */
-gpii.test.couchdb.checkCouchOnce = function (options) {
-    var couchUpPromise = fluid.promise();
-    request.get(options.couch.baseUrl, function (error, response) {
+gpii.test.couchdb.checkUrlOnce = function (options) {
+    var urlCheckPromise = fluid.promise();
+    request.get(options.baseUrl, function (error, response) {
         if (error) {
-            couchUpPromise.resolve(false);
+            urlCheckPromise.resolve(false);
         }
         else if (response.statusCode === 200) {
-            couchUpPromise.resolve(true);
+            urlCheckPromise.resolve(true);
         }
         else {
-            couchUpPromise.resolve(false);
+            urlCheckPromise.resolve(false);
         }
     });
-    return couchUpPromise;
+    return urlCheckPromise;
 };
 
 /**
@@ -37,15 +38,16 @@ gpii.test.couchdb.checkCouchOnce = function (options) {
  * @return {Promise} - A `fluid.promise` that will be resolved when couch is available or rejected if the instance doesn't respond in time.
  *
  */
-gpii.test.couchdb.checkCouchRepeatedly = function (options) {
-    var couchReadyPromise = fluid.promise();
+gpii.test.couchdb.checkUrlRepeatedly = function (options) {
+    var urlCheckPromise = fluid.promise();
     var timeout = setTimeout( function () {
-        if (!couchReadyPromise.disposition) {
-            couchReadyPromise.reject("Timed out waiting for CouchDB to be available.");
+        if (!urlCheckPromise.disposition) {
+            urlCheckPromise.reject("Timed out waiting for URL '" + options.baseURL + "' to respond.");
         }
-    }, options.couchSetupTimeout || 30000);
+    }, options.setupTimeout || 30000);
+
     var interval = setInterval(function () {
-        var singleCouchCheckPromise = gpii.test.couchdb.checkCouchOnce(options);
+        var singleCouchCheckPromise = gpii.test.couchdb.checkUrlOnce(options);
         singleCouchCheckPromise.then(
             function (isUp) {
                 if (isUp) {
@@ -53,14 +55,14 @@ gpii.test.couchdb.checkCouchRepeatedly = function (options) {
                     clearInterval(interval);
 
                     // Workaround for GPII-3989 to reduce the frequency of double promise resolution.
-                    if (!couchReadyPromise.disposition) {
-                        couchReadyPromise.resolve();
+                    if (!urlCheckPromise.disposition) {
+                        urlCheckPromise.resolve();
                     }
                 }
             },
-            couchReadyPromise.reject
+            urlCheckPromise.reject
         );
-    }, options.couchSetupCheckInterval || 250);
+    }, options.setupCheckInterval || 250);
 
-    return couchReadyPromise;
+    return urlCheckPromise;
 };

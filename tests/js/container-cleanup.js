@@ -8,7 +8,7 @@ if (fluid.get(process, "env.GPII_TEST_COUCH_USE_EXTERNAL")) {
     fluid.log("Skipping container cleanup for 'external' worker.");
 }
 else {
-    gpii.test.couchdb.worker({
+    gpii.test.couchdb.worker.couch({
         removeContainer: true,
         listeners: {
             "onCreate.shutdown": {

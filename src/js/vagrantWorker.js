@@ -147,12 +147,22 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
         },
         "combinedStartup.waitForCouch": {
             priority: "after:startIfNeeded",
-            funcName: "gpii.test.couchdb.checkCouchOnce",
+            funcName: "gpii.test.couchdb.checkUrlOnce",
             args:     ["{that}.options"]
         },
         "combinedStartup.fireEvent": {
             priority: "last",
             func: "{that}.events.onStartupComplete.fire"
+        }
+    }
+});
+
+fluid.defaults("gpii.test.couchdb.lucene.worker.vagrant", {
+    gradeNames: ["gpii.test.couchdb.worker"],
+    listeners: {
+        "onCreate.explode": {
+            funcName: "fluid.fail",
+            args: ["The lucene test harness can only be used with Docker."]
         }
     }
 });

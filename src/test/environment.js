@@ -19,10 +19,7 @@ fluid.defaults("gpii.test.couchdb.environment.base", {
         harness: {
             type: "gpii.test.couchdb.harness",
             options: {
-                couch: {
-                    port:     "{gpii.test.couchdb.environment.base}.options.couch.port",
-                    hostname: "{gpii.test.couchdb.environment.base}.options.couch.hostname"
-                },
+                couch: "{gpii.test.couchdb.environment.base}.options.couch",
                 databases: "{gpii.test.couchdb.environment.base}.options.databases"
             }
         }
@@ -32,4 +29,13 @@ fluid.defaults("gpii.test.couchdb.environment.base", {
 fluid.defaults("gpii.test.couchdb.environment", {
     gradeNames: ["gpii.test.couchdb.environment.base"],
     databases:  gpii.test.couchdb.harness.config.databases
+});
+
+fluid.defaults("gpii.test.couchdb.lucene.environment", {
+    gradeNames: ["gpii.test.couchdb.environment"],
+    components: {
+        harness: {
+            type: "gpii.test.couchdb.harness.lucene"
+        }
+    }
 });

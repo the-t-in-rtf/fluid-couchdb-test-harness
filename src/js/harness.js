@@ -4,36 +4,34 @@ var gpii  = fluid.registerNamespace("gpii");
 
 var request = require("request");
 
-require("./isCouchReady");
+require("./checkUrl");
 require("./worker");
 
 fluid.registerNamespace("gpii.test.couchdb.harness");
 
 /**
  *
- * If CouchDB is not already responding, let our worker know to start its container.
+ * If the worker is not already "up", start it.
  *
- * @param {Object} that - The harness component itself
- * @param {Boolean} isCouchUp - Whether or not CouchDB is already running (returned by an earlier step in the promise chain).
+ * @param {Object} worker - The worker to start.
+ * @param {Boolean} isWorkerUp - Whether or not the worker is already "up" (returned by an earlier step in the promise chain).
  * @return {Promise} - A `fluid.promise` that will be resolved when the container is available or rejected if an error occurs.
  *
  */
-gpii.test.couchdb.harness.startIfNeeded = function (that, isCouchUp) {
+gpii.test.couchdb.harness.startIfNeeded = function (worker, isWorkerUp) {
     var startPromise = fluid.promise();
     // If our worker has already been destroyed, startup is not needed.
-    if (fluid.isDestroyed(that.worker)) {
-        startPromise.resolve("Our worker has been destroyed, aborting startup.");
+    if (fluid.isDestroyed(worker)) {
+        startPromise.reject("Our worker has been destroyed, aborting startup.");
     }
     else {
-        that.worker.isUp().then(function () {
-            if (isCouchUp) {
-                startPromise.resolve("CouchDB is already running, no need to start it.");
-            }
-            else {
-                var innerStartPromise = that.worker.startup();
-                innerStartPromise.then(startPromise.resolve, startPromise.reject);
-            }
-        }, startPromise.reject);
+        if (isWorkerUp) {
+            startPromise.resolve("CouchDB is already running, no need to start it.");
+        }
+        else {
+            var innerStartPromise = worker.startup();
+            innerStartPromise.then(startPromise.resolve, startPromise.reject);
+        }
     }
     return startPromise;
 };
@@ -42,17 +40,17 @@ gpii.test.couchdb.harness.startIfNeeded = function (that, isCouchUp) {
  *
  * If we are configured to shut down the associated container on shutdown, do so.
  *
- * @param {Object} that - The harness component.
+ * @param {Object} worker - The harness component.
  * @return {Promise} - A `fluid.promise` that will be resolved once shutdown is complete (or skipped), or rejected on an error.
  *
  */
-gpii.test.couchdb.harness.shutdownIfNeeded = function (that) {
-    if (that.options.shutdownContainer) {
-        return that.worker.shutdown();
+gpii.test.couchdb.harness.shutdownIfNeeded = function (worker) {
+    if (worker.options.shutdownContainer) {
+        return worker.shutdown();
     }
     else {
         var promise = fluid.promise();
-        promise.resolve("We are not configured to shut down the associated container, skipping container shutdown.");
+        promise.resolve("We are not configured to shut down the associated worker, skipping shutdown.");
         return promise;
     }
 };
@@ -91,10 +89,10 @@ gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbN
         var dbProvisioningPromise = fluid.promise();
         try {
             var dbUrl = fluid.stringTemplate(
-                that.options.templates.couchDbUrl,
+                that.options.templates.dbUrl,
                 {
-                    baseUrl: that.options.couch.baseUrl,
-                    dbName:  dbName
+                    couchUrl: that.couchWorker.options.baseUrl,
+                    dbName:   dbName
                 }
             );
 
@@ -275,92 +273,19 @@ gpii.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName,
     };
 };
 
-/**
- *
- * Clear the "health check" monitoring interval and discontinue monitoring.
- *
- * @param {Object} that - The harness component.
- *
- */
-gpii.test.couchdb.harness.clearTimeout = function (that) {
-    if (that.monitorTimeout) {
-        clearTimeout(that.monitorTimeout);
-        that.monitorTimeout = false;
-    }
-};
-
-/**
- *
- * Start monitoring the health of the associated docker container so that we can shut ourselves down if it fails to
- * start up or is stopped externally, for example by using a docker command.  Also serves to keep the component running
- * until it's either manually destroyed or until its associated CouchDB instance is brought down.
- *
- * @param {Object} that - The harness component.
- *
- */
-gpii.test.couchdb.harness.startMonitoring = function (that) {
-    if (that.options.monitorContainer) {
-        that.monitorTimeout = setTimeout(
-            that.monitorContainerOnce,
-            that.options.containerMonitoringInterval
-        );
-    }
-};
-
-gpii.test.couchdb.harness.monitorContainerOnce = function (that) {
-    var isUpPromise = that.worker.isUp();
-    isUpPromise.then(
-        function (isUp) {
-            fluid.log(fluid.logLevel.TRACE, "Container " + isUp ? "is" : "is not" + " up.");
-
-            if (!isUp) {
-                that.events.onCouchMissing.fire();
-            }
-
-            // We use this pattern instead of setInterval to avoid piling up multiple checks.
-            setTimeout(
-                that.monitorContainerOnce,
-                that.options.containerMonitoringInterval
-            );
-        },
-        fluid.fail
-    );
-    return isUpPromise;
-};
-
 fluid.defaults("gpii.test.couchdb.harness", {
     gradeNames: ["fluid.component"],
     cleanDbs: true,
-    monitorContainer: false,
-    shutdownContainer: false,
-    removeContainer: false,
-    containerMonitoringInterval: 500,
-    couchSetupCheckInterval: 500,
-    members: {
-        monitorTimeout: false
-    },
-    databases: {
-    },
+    shutdownContainers: false,
+    removeContainers: false,
     couch: {
-        port:      25984,
-        hostname:  "localhost",
-        baseUrl:   {
-            expander: {
-                funcName: "fluid.stringTemplate",
-                args: ["{that}.options.templates.couchBaseUrl", { hostname: "{that}.options.couch.hostname", port: "{that}.options.couch.port"}]
-            }
-        },
-        allDbsUrl: {
-            expander: {
-                funcName: "fluid.stringTemplate",
-                args: ["{that}.options.templates.couchAllDbsUrl", { baseUrl: "{that}.options.couch.baseUrl"}]
-            }
-        }
+        port: 25984,
+        hostname: "localhost"
     },
     templates: {
-        couchBaseUrl:   "http://%hostname:%port",
-        couchAllDbsUrl: "%baseUrl/_all_dbs",
-        couchDbUrl:     "%baseUrl/%dbName"
+        dbUrl: "%couchUrl/%dbName"
+    },
+    databases: {
     },
     events: {
         combinedDbSetup:          null,
@@ -372,10 +297,6 @@ fluid.defaults("gpii.test.couchdb.harness", {
         onStartupComplete:        null
     },
     invokers: {
-        monitorContainerOnce: {
-            funcName: "gpii.test.couchdb.harness.monitorContainerOnce",
-            args:     ["{that}"]
-        },
         provisionDbs: {
             funcName: "fluid.promise.fireTransformEvent",
             args:     ["{that}.events.combinedDbSetup", "{arguments}.0"] // forceClean
@@ -399,61 +320,66 @@ fluid.defaults("gpii.test.couchdb.harness", {
             priority: "last",
             func:     "{that}.events.onDbProvisioningComplete.fire"
         },
+        //"combinedStartup.logHarnessStart": {
+        //    priority: "first",
+        //    funcName: "fluid.log",
+        //    args: ["Starting harness..."]
+        //},
         "combinedStartup.isCouchUp": {
             priority: "first",
-            funcName: "gpii.test.couchdb.checkCouchOnce",
-            args:     ["{that}.options"]
+            func: "{gpii.test.couchdb.worker.couch}.isUp"
         },
-        "combinedStartup.startIfNeeded": {
+        "combinedStartup.startCouchIfNeeded": {
             priority: "after:isCouchUp",
             funcName: "gpii.test.couchdb.harness.startIfNeeded",
-            args:     ["{that}", "{arguments}.0"] // isCouchUp
+            args:     ["{gpii.test.couchdb.worker.couch}", "{arguments}.0"] // worker, isWorkerUp
         },
-        "combinedStartup.isCouchUpAfterStartup": {
-            priority: "after:startIfNeeded",
-            funcName: "gpii.test.couchdb.checkCouchRepeatedly",
-            args:     ["{that}.options"]
+        //"combinedStartup.logCouchUp": {
+        //    priority: "after:startCouchIfNeeded",
+        //    funcName: "fluid.log",
+        //    args: ["Couch worker is up..."]
+        //},
+        "combinedStartup.isCouchReady": {
+            priority: "after:startCouchIfNeeded",
+            func:     "{gpii.test.couchdb.worker.couch}.isReady"
         },
+        //"combinedStartup.logCouchReady": {
+        //    priority: "after:isCouchReady",
+        //    funcName: "fluid.log",
+        //    args: ["Couch worker is ready..."]
+        //},
         "combinedStartup.provisionDbs": {
-            priority: "after:isCouchUpAfterStartup",
+            priority: "after:isCouchReady",
             func:     "{that}.provisionDbs",
             args:     []
         },
-        "combinedStartup.startMonitoring": {
-            priority: "after:provisionDbs",
-            funcName: "gpii.test.couchdb.harness.startMonitoring",
-            args:     ["{that}"]
-        },
+        //"combinedStartup.logProvisioningComplete": {
+        //    priority: "after:provisionDbs",
+        //    func: "fluid.log",
+        //    args: ["Database provisioning complete..."]
+        //},
         "combinedStartup.fireEvent": {
             priority: "last",
             func:      "{that}.events.onStartupComplete.fire"
         },
-        "combinedShutdown.clearTimeout": {
-            priority: "first",
-            funcName: "gpii.test.couchdb.harness.clearTimeout",
-            args:     ["{that}"]
-        },
-        "combinedShutdown.shutdownIfNeeded": {
-            priority: "after:clearTimeout",
+        "combinedShutdown.shutdownCouchIfNeeded": {
+            priority: "before:fireEvent",
             funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
-            args:     ["{that}"]
+            args:     ["{gpii.test.couchdb.worker.couch}"]
         },
         "combinedShutdown.fireEvent": {
             priority: "last",
             func:     "{that}.events.onShutdownComplete.fire"
-        },
-        "onCouchMissing.clearTimeout": {
-            funcName: "gpii.test.couchdb.harness.clearTimeout",
-            args:     ["{that}"]
         }
     },
     components: {
-        worker: {
-            type: "gpii.test.couchdb.worker",
+        couchWorker: {
+            type: "gpii.test.couchdb.worker.couch",
             options: {
-                shutdownContainer: "{gpii.test.couchdb.harness}.options.shutdownContainer",
-                removeContainer:   "{gpii.test.couchdb.harness}.options.removeContainer",
-                couch:             "{gpii.test.couchdb.harness}.options.couch"
+                shutdownContainer: "{gpii.test.couchdb.harness}.options.shutdownContainers",
+                removeContainer:   "{gpii.test.couchdb.harness}.options.removeContainers",
+                port:              "{gpii.test.couchdb.harness}.options.couch.port",
+                hostname:          "{gpii.test.couchdb.harness}.options.couch.hostname"
             }
         }
     }
@@ -462,4 +388,54 @@ fluid.defaults("gpii.test.couchdb.harness", {
 fluid.defaults("gpii.test.couchdb.harness.persistent", {
     gradeNames: ["gpii.test.couchdb.harness"],
     cleanDbs: false
+});
+
+fluid.registerNamespace("gpii.test.couchdb.harness.lucene");
+gpii.test.couchdb.harness.lucene.registerCouchContainerName = function (luceneWorker, couchWorker) {
+    luceneWorker.couchContainerName = couchWorker.containerName;
+};
+
+fluid.defaults("gpii.test.couchdb.harness.lucene", {
+    gradeNames: ["gpii.test.couchdb.harness"],
+    lucene: {
+        hostname: "localhost",
+        port: 25985
+    },
+    listeners: {
+        "combinedStartup.registerCouchContainerName": {
+            priority: "after:provisionDbs",
+            funcName: "gpii.test.couchdb.harness.lucene.registerCouchContainerName",
+            args: ["{gpii.test.couchdb.worker.lucene}", "{gpii.test.couchdb.worker.couch}"] // luceneWorker, couchWorker
+        },
+        "combinedStartup.isLuceneUp": {
+            priority: "after:registerCouchContainerName",
+            func: "{gpii.test.couchdb.worker.lucene}.isUp"
+        },
+        "combinedStartup.startLuceneIfNeeded": {
+            priority: "after:isLuceneUp",
+            funcName: "gpii.test.couchdb.harness.startIfNeeded",
+            args:     ["{gpii.test.couchdb.worker.lucene}", "{arguments}.0"] // worker, isWorkerUp
+        },
+        "combinedStartup.isLuceneReady": {
+            priority: "after:startLuceneIfNeeded",
+            func:     "{gpii.test.couchdb.worker.lucene}.isReady"
+        },
+        "combinedShutdown.shutdownLuceneIfNeeded": {
+            priority: "before:shutdownCouchIfNeeded",
+            funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
+            args:     ["{gpii.test.couchdb.worker.lucene}"]
+        }
+    },
+    components: {
+        luceneWorker: {
+            type: "gpii.test.couchdb.worker.lucene",
+            options: {
+                shutdownContainer:  "{gpii.test.couchdb.harness}.options.shutdownContainers",
+                removeContainer:    "{gpii.test.couchdb.harness}.options.removeContainers",
+                port:               "{gpii.test.couchdb.harness}.options.lucene.port",
+                hostname:           "{gpii.test.couchdb.harness}.options.lucene.hostname",
+                couchContainerName: "{gpii.test.couchdb.worker.couch}.options.containerName"
+            }
+        }
+    }
 });
