@@ -320,11 +320,6 @@ fluid.defaults("gpii.test.couchdb.harness", {
             priority: "last",
             func:     "{that}.events.onDbProvisioningComplete.fire"
         },
-        //"combinedStartup.logHarnessStart": {
-        //    priority: "first",
-        //    funcName: "fluid.log",
-        //    args: ["Starting harness..."]
-        //},
         "combinedStartup.isCouchUp": {
             priority: "first",
             func: "{gpii.test.couchdb.worker.couch}.isUp"
@@ -334,30 +329,15 @@ fluid.defaults("gpii.test.couchdb.harness", {
             funcName: "gpii.test.couchdb.harness.startIfNeeded",
             args:     ["{gpii.test.couchdb.worker.couch}", "{arguments}.0"] // worker, isWorkerUp
         },
-        //"combinedStartup.logCouchUp": {
-        //    priority: "after:startCouchIfNeeded",
-        //    funcName: "fluid.log",
-        //    args: ["Couch worker is up..."]
-        //},
         "combinedStartup.isCouchReady": {
             priority: "after:startCouchIfNeeded",
             func:     "{gpii.test.couchdb.worker.couch}.isReady"
         },
-        //"combinedStartup.logCouchReady": {
-        //    priority: "after:isCouchReady",
-        //    funcName: "fluid.log",
-        //    args: ["Couch worker is ready..."]
-        //},
         "combinedStartup.provisionDbs": {
             priority: "after:isCouchReady",
             func:     "{that}.provisionDbs",
             args:     []
         },
-        //"combinedStartup.logProvisioningComplete": {
-        //    priority: "after:provisionDbs",
-        //    func: "fluid.log",
-        //    args: ["Database provisioning complete..."]
-        //},
         "combinedStartup.fireEvent": {
             priority: "last",
             func:      "{that}.events.onStartupComplete.fire"
