@@ -44,7 +44,8 @@ gpii.test.couchdb.caseHolder.expandModules = function (rawModules, sequenceGrade
 fluid.defaults("gpii.test.couchdb.sequenceElement.startHarness", {
     gradeNames: "fluid.test.sequenceElement",
     sequence: [{
-        task:        "{harness}.startup",
+        // TODO: Improve this IoC reference once potentia ii is merged.
+        task:        "{testEnvironment}.harness.startup",
         resolve:     "fluid.log",
         resolveArgs: ["Harness startup successful."]
     }]
@@ -53,7 +54,8 @@ fluid.defaults("gpii.test.couchdb.sequenceElement.startHarness", {
 fluid.defaults("gpii.test.couchdb.sequenceElement.stopHarness", {
     gradeNames: "fluid.test.sequenceElement",
     sequence: [{
-        task:        "{harness}.shutdown",
+        // TODO: Improve this IoC reference once potentia ii is merged.
+        task:        "{testEnvironment}.harness.shutdown",
         resolve:     "fluid.log",
         resolveArgs: ["Harness shutdown successful."]
     }]
