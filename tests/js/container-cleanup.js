@@ -16,4 +16,13 @@ else {
             }
         }
     });
+
+    gpii.test.couchdb.worker.lucene({
+        removeContainer: true,
+        listeners: {
+            "onCreate.shutdown": {
+                func: "{that}.shutdown"
+            }
+        }
+    });
 }

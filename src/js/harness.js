@@ -322,16 +322,19 @@ fluid.defaults("gpii.test.couchdb.harness", {
         },
         "combinedStartup.isCouchUp": {
             priority: "first",
-            func: "{gpii.test.couchdb.worker.couch}.isUp"
+            // TODO: Update to use {gpii.test.couchdb.worker.couch}.isUp once potentia ii is merged.
+            func: "{harness}.couchWorker.isUp"
         },
         "combinedStartup.startCouchIfNeeded": {
             priority: "after:isCouchUp",
             funcName: "gpii.test.couchdb.harness.startIfNeeded",
-            args:     ["{gpii.test.couchdb.worker.couch}", "{arguments}.0"] // worker, isWorkerUp
+            // TODO: Update to use {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            args:     ["{harness}.couchWorker", "{arguments}.0"] // worker, isWorkerUp
         },
         "combinedStartup.isCouchReady": {
             priority: "after:startCouchIfNeeded",
-            func:     "{gpii.test.couchdb.worker.couch}.isReady"
+            // TODO: Update to use {gpii.test.couchdb.worker.couch}.isReady once potentia ii is merged.
+            func:     "{harness}.couchWorker.isReady"
         },
         "combinedStartup.provisionDbs": {
             priority: "after:isCouchReady",
@@ -345,7 +348,8 @@ fluid.defaults("gpii.test.couchdb.harness", {
         "combinedShutdown.shutdownCouchIfNeeded": {
             priority: "before:fireEvent",
             funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
-            args:     ["{gpii.test.couchdb.worker.couch}"]
+            // TODO: Update to use {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            args:     ["{harness}.couchWorker"]
         },
         "combinedShutdown.fireEvent": {
             priority: "last",
@@ -385,25 +389,30 @@ fluid.defaults("gpii.test.couchdb.harness.lucene", {
         "combinedStartup.registerCouchContainerName": {
             priority: "after:provisionDbs",
             funcName: "gpii.test.couchdb.harness.lucene.registerCouchContainerName",
-            args: ["{gpii.test.couchdb.worker.lucene}", "{gpii.test.couchdb.worker.couch}"] // luceneWorker, couchWorker
+            // TODO: Update to use {gpii.test.couchdb.worker.lucene} and {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            args: ["{harness}.luceneWorker", "{harness}.couchWorker"] // luceneWorker, couchWorker
         },
         "combinedStartup.isLuceneUp": {
             priority: "after:registerCouchContainerName",
-            func: "{gpii.test.couchdb.worker.lucene}.isUp"
+            // TODO: Update to use {gpii.test.couchdb.worker.lucene}.isUp once potentia ii is merged.
+            func: "{harness}.luceneWorker.isUp"
         },
         "combinedStartup.startLuceneIfNeeded": {
             priority: "after:isLuceneUp",
             funcName: "gpii.test.couchdb.harness.startIfNeeded",
-            args:     ["{gpii.test.couchdb.worker.lucene}", "{arguments}.0"] // worker, isWorkerUp
+            // TODO: Update to use {gpii.test.couchdb.worker.lucene} once potentia ii is merged.
+            args:     ["{harness}.luceneWorker", "{arguments}.0"] // worker, isWorkerUp
         },
         "combinedStartup.isLuceneReady": {
             priority: "after:startLuceneIfNeeded",
-            func:     "{gpii.test.couchdb.worker.lucene}.isReady"
+            // TODO: Update to use {gpii.test.couchdb.worker.lucene}.isReady once potentia ii is merged.
+            func:     "{harness}.luceneWorker.isReady"
         },
         "combinedShutdown.shutdownLuceneIfNeeded": {
             priority: "before:shutdownCouchIfNeeded",
             funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
-            args:     ["{gpii.test.couchdb.worker.lucene}"]
+            // TODO: Update to use {gpii.test.couchdb.worker.lucene} once potentia ii is merged.
+            args:     ["{harness}.luceneWorker"]
         }
     },
     components: {
@@ -413,8 +422,7 @@ fluid.defaults("gpii.test.couchdb.harness.lucene", {
                 shutdownContainer:  "{gpii.test.couchdb.harness}.options.shutdownContainers",
                 removeContainer:    "{gpii.test.couchdb.harness}.options.removeContainers",
                 port:               "{gpii.test.couchdb.harness}.options.lucene.port",
-                hostname:           "{gpii.test.couchdb.harness}.options.lucene.hostname",
-                couchContainerName: "{gpii.test.couchdb.worker.couch}.options.containerName"
+                hostname:           "{gpii.test.couchdb.harness}.options.lucene.hostname"
             }
         }
     }
