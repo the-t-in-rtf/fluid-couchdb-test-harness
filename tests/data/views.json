@@ -1,0 +1,42 @@
+{
+    "docs": [
+        {
+            "_id": "_design/count",
+            "views": {
+                "count": {
+                    "map":    "function (doc) {\n  if (!doc._id.match(/^_design/)) {\n    emit(doc.type, doc.name);\n  }\n}",
+                    "reduce": "_count"
+                }
+            }
+        },
+        {
+            "_id": "_design/lucene",
+            "fulltext": {
+                "by_content": {
+                    "index": "function(doc) {\n  if (!doc._id.match(/^_design/)) {\n    var defs = \"\";\n    var ret=new Document();\n    var keysToStore = [\"type\",\"name\"];\n    for (var i in keysToStore) {\n      var field = keysToStore[i];\n      if (doc[field]) {\n        ret.add(doc[field],{\"field\":field, \"store\":\"yes\"});\n        defs += \" \" + doc[field] + \" \";\n      }\n    }\n    ret.add(defs,{\"field\":\"default\", \"store\": \"no\"});\n    return ret;\n  }\n}",
+                    "defaults": {
+                        "field": "name",
+                        "store": "yes"
+                    },
+                    "analyzer": "perfield:{default:\"standard\",uid:\"keyword\",source:\"keyword\",language:\"keyword\",status:\"keyword\"}"
+                }
+            }
+        },
+        {
+            "type": "bird",
+            "name": "ostrich"
+        },
+        {
+            "type": "beast",
+            "name": "honey badger"
+        },
+        {
+            "type": "bird",
+            "name": "coot"
+        },
+        {
+            "type": "beast",
+            "name": "wolverine"
+        }
+    ]
+}
