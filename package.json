@@ -1,6 +1,6 @@
 {
     "name": "gpii-couchdb-test-harness",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A library to assist in testing CouchDB integration within the Fluid/GPII/Morphic ecosystem.",
     "main": "index.js",
     "scripts": {
