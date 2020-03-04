@@ -108,7 +108,7 @@ fluid.defaults("gpii.test.couchdb.worker.docker", {
     },
     commandTemplates: {
         listContainers:  "docker ps -a --filter label=%options.containerLabel --format '{{ json . }}'",
-        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5984 --name %containerName couchdb",
+        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5984 --name %containerName couchdb:2.3.1",
         startContainer:  "docker start %containerId",
         removeContainer: "docker rm -f %containerId",
         stopContainer:   "docker stop %containerId"
