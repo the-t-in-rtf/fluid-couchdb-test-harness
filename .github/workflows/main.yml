@@ -12,9 +12,9 @@ jobs:
 
     services:
       couchdb:
-	image: couchdb
-	ports:
-	  - 5984:25984
+        image: couchdb
+        ports:
+          - 5984:25984
 
     strategy:
       matrix:
