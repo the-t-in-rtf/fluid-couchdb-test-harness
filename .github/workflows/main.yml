@@ -14,7 +14,7 @@ jobs:
       couchdb:
         image: couchdb
         ports:
-          - 5984:25984
+          - 25984:5984
 
     strategy:
       matrix:
