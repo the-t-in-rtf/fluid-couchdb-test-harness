@@ -6,7 +6,6 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
 require("../../");
 
@@ -14,9 +13,9 @@ var jqUnit = require("node-jqunit");
 
 jqUnit.module("Failure mode tests for promise-returning functions.");
 
-fluid.registerNamespace("gpii.tests.harness.failure");
+fluid.registerNamespace("fluid.tests.harness.failure");
 
-gpii.tests.harness.failure.testSingleTestDef = function (testDef) {
+fluid.tests.harness.failure.testSingleTestDef = function (testDef) {
     jqUnit.asyncTest(testDef.message, function () {
         var promiseOrFn = fluid.invokeGlobalFunction(testDef.funcName, testDef.args);
         var promise = typeof promiseOrFn === "function" ? promiseOrFn() : promiseOrFn;
@@ -33,56 +32,56 @@ gpii.tests.harness.failure.testSingleTestDef = function (testDef) {
     });
 };
 
-gpii.tests.harness.failure.runTests = function (that) {
-    fluid.each(that.options.testDefs, gpii.tests.harness.failure.testSingleTestDef);
+fluid.tests.harness.failure.runTests = function (that) {
+    fluid.each(that.options.testDefs, fluid.tests.harness.failure.testSingleTestDef);
 };
 
-fluid.defaults("gpii.tests.harness.failure.testRunner", {
+fluid.defaults("fluid.tests.harness.failure.testRunner", {
     gradeNames: ["fluid.component"],
     testDefs: {
         checkUrlRepeatedly: {
-            message:  "Test error handling in `gpii.test.couchdb.checkUrlRepeatedly`.",
-            funcName: "gpii.test.couchdb.checkUrlRepeatedly",
+            message:  "Test error handling in `fluid.test.couchdb.checkUrlRepeatedly`.",
+            funcName: "fluid.test.couchdb.checkUrlRepeatedly",
             args:     [{ baseUrl: "http://localhost:5050/", setupTimeout: 500  } ]
         },
         dbCleaning: {
-            message:  "Test error handling in `gpii.test.couchdb.harness.constructDbCleaningPromise`.",
-            funcName: "gpii.test.couchdb.harness.constructDbCleaningPromise",
+            message:  "Test error handling in `fluid.test.couchdb.harness.constructDbCleaningPromise`.",
+            funcName: "fluid.test.couchdb.harness.constructDbCleaningPromise",
             args:     ["http://localhost:5050/myDb"]
         },
         dbCreation: {
-            message:  "Test error handling in `gpii.test.couchdb.harness.constructDbCreationPromise`.",
-            funcName: "gpii.test.couchdb.harness.constructDbCreationPromise",
+            message:  "Test error handling in `fluid.test.couchdb.harness.constructDbCreationPromise`.",
+            funcName: "fluid.test.couchdb.harness.constructDbCreationPromise",
             args:     ["http://localhost:5050/myDb"]
         },
         provisionSingleDbMissingHost: {
-            message:  "Test async error handling in `gpii.test.couchdb.harness.provisionSingleDbIfNeeded`.",
-            funcName: "gpii.test.couchdb.harness.provisionSingleDbIfNeeded",
+            message:  "Test async error handling in `fluid.test.couchdb.harness.provisionSingleDbIfNeeded`.",
+            funcName: "fluid.test.couchdb.harness.provisionSingleDbIfNeeded",
             args:     [{ options: { couch: {}, templates: { couchDbUrl: "http://localhost:5050/"}}}, {}, "myDb"]
         },
         provisionSingleDbGrossError: {
-            message:  "Test gross error handling in `gpii.test.couchdb.harness.provisionSingleDbIfNeeded`.",
-            funcName: "gpii.test.couchdb.harness.provisionSingleDbIfNeeded",
+            message:  "Test gross error handling in `fluid.test.couchdb.harness.provisionSingleDbIfNeeded`.",
+            funcName: "fluid.test.couchdb.harness.provisionSingleDbIfNeeded",
             args:     []
         },
         runCommandAsPromiseBadCommand: {
-            message:  "Test command error output handling in `gpii.test.couchdb.runCommandAsPromise`.",
-            funcName: "gpii.test.couchdb.runCommandAsPromise",
+            message:  "Test command error output handling in `fluid.test.couchdb.runCommandAsPromise`.",
+            funcName: "fluid.test.couchdb.runCommandAsPromise",
             args:     ["halt and catch fire", {}]
         },
         runCommandAsPromiseUndefinedCommand: {
-            message:  "Test low-level error handling in `gpii.test.couchdb.runCommandAsPromise`.",
-            funcName: "gpii.test.couchdb.runCommandAsPromise",
+            message:  "Test low-level error handling in `fluid.test.couchdb.runCommandAsPromise`.",
+            funcName: "fluid.test.couchdb.runCommandAsPromise",
             args:     [undefined, {}]
         }
 
     },
     listeners: {
         "onCreate.runTests": {
-            funcName: "gpii.tests.harness.failure.runTests",
+            funcName: "fluid.tests.harness.failure.runTests",
             args:     ["{that}"]
         }
     }
 });
 
-gpii.tests.harness.failure.testRunner();
+fluid.tests.harness.failure.testRunner();

@@ -1,13 +1,12 @@
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 
 var request = require("request");
 
 require("./checkUrl");
 require("./worker");
 
-fluid.registerNamespace("gpii.test.couchdb.harness");
+fluid.registerNamespace("fluid.test.couchdb.harness");
 
 /**
  *
@@ -18,7 +17,7 @@ fluid.registerNamespace("gpii.test.couchdb.harness");
  * @return {Promise} - A `fluid.promise` that will be resolved when the container is available or rejected if an error occurs.
  *
  */
-gpii.test.couchdb.harness.startIfNeeded = function (worker, isWorkerUp) {
+fluid.test.couchdb.harness.startIfNeeded = function (worker, isWorkerUp) {
     var startPromise = fluid.promise();
     // If our worker has already been destroyed, startup is not needed.
     if (fluid.isDestroyed(worker)) {
@@ -44,7 +43,7 @@ gpii.test.couchdb.harness.startIfNeeded = function (worker, isWorkerUp) {
  * @return {Promise} - A `fluid.promise` that will be resolved once shutdown is complete (or skipped), or rejected on an error.
  *
  */
-gpii.test.couchdb.harness.shutdownIfNeeded = function (worker) {
+fluid.test.couchdb.harness.shutdownIfNeeded = function (worker) {
     if (worker.options.shutdownContainer) {
         return worker.shutdown();
     }
@@ -64,9 +63,9 @@ gpii.test.couchdb.harness.shutdownIfNeeded = function (worker) {
  * @return {Promise} - A `fluid.promise` that will be resolved when provisioning is complete or rejected if an error occurs.
  *
  */
-gpii.test.couchdb.harness.provisionDbsIfNeeded = function (that, forceClean) {
+fluid.test.couchdb.harness.provisionDbsIfNeeded = function (that, forceClean) {
     var provisioningPromiseMap = fluid.transform(that.options.databases, function (dbDef, dbName) {
-        return gpii.test.couchdb.harness.provisionSingleDbIfNeeded(that, dbDef, dbName, forceClean);
+        return fluid.test.couchdb.harness.provisionSingleDbIfNeeded(that, dbDef, dbName, forceClean);
     });
     var provisioningPromises = fluid.values(provisioningPromiseMap);
     var provisioningSequence = fluid.promise.sequence(provisioningPromises);
@@ -84,7 +83,7 @@ gpii.test.couchdb.harness.provisionDbsIfNeeded = function (that, forceClean) {
  * @return {Function} - A `fluid.promise` returning function.  The promise will be resolved when the database is provisioned or rejected if an error occurs.
  *
  */
-gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbName, forceClean) {
+fluid.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbName, forceClean) {
     return function () {
         var dbProvisioningPromise = fluid.promise();
         try {
@@ -115,19 +114,19 @@ gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbN
                     // Delete the existing data if needed.
                     if (alreadyExists && shouldClean) {
                         fluid.log(fluid.logLevel.TRACE, "Queueing up deletion of existing database: ", dbUrl);
-                        provisioningPromises.push(gpii.test.couchdb.harness.constructDbCleaningPromise(dbUrl));
+                        provisioningPromises.push(fluid.test.couchdb.harness.constructDbCleaningPromise(dbUrl));
                     }
 
                     // Create the database if needed.
                     if (shouldClean || !alreadyExists) {
                         fluid.log(fluid.logLevel.TRACE, "Queueing up creation of database: ", dbUrl);
-                        provisioningPromises.push(gpii.test.couchdb.harness.constructDbCreationPromise(dbUrl));
+                        provisioningPromises.push(fluid.test.couchdb.harness.constructDbCreationPromise(dbUrl));
                     }
 
                     // Load data if needed.
                     if ((!alreadyExists || shouldClean) && dbDef.data) {
                         fluid.log(fluid.logLevel.TRACE, "Queueing up data loading of database: ", dbUrl);
-                        provisioningPromises.push(gpii.test.couchdb.harness.constructDataLoadingPromise(dbUrl, dbName, dbDef));
+                        provisioningPromises.push(fluid.test.couchdb.harness.constructDataLoadingPromise(dbUrl, dbName, dbDef));
                     }
 
                     if (provisioningPromises.length > 0) {
@@ -164,7 +163,7 @@ gpii.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, dbN
  * @return {Function} - A `fluid.promise` returning function.  The promise will be resolved when the existing database is deleted or rejected if an error occurs.
  *
  */
-gpii.test.couchdb.harness.constructDbCleaningPromise = function (dbUrl) {
+fluid.test.couchdb.harness.constructDbCleaningPromise = function (dbUrl) {
     return function () {
         var singleDbCleaningPromise = fluid.promise();
         fluid.log(fluid.logLevel.TRACE, "Deleting existing content for database: ", dbUrl);
@@ -194,7 +193,7 @@ gpii.test.couchdb.harness.constructDbCleaningPromise = function (dbUrl) {
  * @return {Function} - A `fluid.promise`-returning function.  The promise returned will be resolved when the database is created or rejected on error.
  *
  */
-gpii.test.couchdb.harness.constructDbCreationPromise = function (dbUrl) {
+fluid.test.couchdb.harness.constructDbCreationPromise = function (dbUrl) {
     return function () {
         var dbCreationPromise = fluid.promise();
 
@@ -226,7 +225,7 @@ gpii.test.couchdb.harness.constructDbCreationPromise = function (dbUrl) {
  * @return {Function} - A `fluid.promise`-returning function.  The promise returned will be resolved when the data is loaded or rejected on error.
  *
  */
-gpii.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName, dbDef) {
+fluid.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName, dbDef) {
     return function () {
         var dataLoadingPromise = fluid.promise();
 
@@ -273,7 +272,7 @@ gpii.test.couchdb.harness.constructDataLoadingPromise = function (dbUrl, dbName,
     };
 };
 
-fluid.defaults("gpii.test.couchdb.harness", {
+fluid.defaults("fluid.test.couchdb.harness", {
     gradeNames: ["fluid.component"],
     cleanDbs: true,
     shutdownContainers: false,
@@ -313,7 +312,7 @@ fluid.defaults("gpii.test.couchdb.harness", {
     listeners: {
         "combinedDbSetup.provisionDbsIfNeeded": {
             priority: "first",
-            funcName: "gpii.test.couchdb.harness.provisionDbsIfNeeded",
+            funcName: "fluid.test.couchdb.harness.provisionDbsIfNeeded",
             args:     ["{that}", "{arguments}.0"] // forceClean
         },
         "combinedDbSetup.fireCleanupComplete": {
@@ -322,18 +321,18 @@ fluid.defaults("gpii.test.couchdb.harness", {
         },
         "combinedStartup.isCouchUp": {
             priority: "first",
-            // TODO: Update to use {gpii.test.couchdb.worker.couch}.isUp once potentia ii is merged.
+            // TODO: Update to use {fluid.test.couchdb.worker.couch}.isUp once potentia ii is merged.
             func: "{harness}.couchWorker.isUp"
         },
         "combinedStartup.startCouchIfNeeded": {
             priority: "after:isCouchUp",
-            funcName: "gpii.test.couchdb.harness.startIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            funcName: "fluid.test.couchdb.harness.startIfNeeded",
+            // TODO: Update to use {fluid.test.couchdb.worker.couch} once potentia ii is merged.
             args:     ["{harness}.couchWorker", "{arguments}.0"] // worker, isWorkerUp
         },
         "combinedStartup.isCouchReady": {
             priority: "after:startCouchIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.couch}.isReady once potentia ii is merged.
+            // TODO: Update to use {fluid.test.couchdb.worker.couch}.isReady once potentia ii is merged.
             func:     "{harness}.couchWorker.isReady"
         },
         "combinedStartup.provisionDbs": {
@@ -347,8 +346,8 @@ fluid.defaults("gpii.test.couchdb.harness", {
         },
         "combinedShutdown.shutdownCouchIfNeeded": {
             priority: "before:fireEvent",
-            funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            funcName: "fluid.test.couchdb.harness.shutdownIfNeeded",
+            // TODO: Update to use {fluid.test.couchdb.worker.couch} once potentia ii is merged.
             args:     ["{harness}.couchWorker"]
         },
         "combinedShutdown.fireEvent": {
@@ -358,29 +357,29 @@ fluid.defaults("gpii.test.couchdb.harness", {
     },
     components: {
         couchWorker: {
-            type: "gpii.test.couchdb.worker.couch",
+            type: "fluid.test.couchdb.worker.couch",
             options: {
-                shutdownContainer: "{gpii.test.couchdb.harness}.options.shutdownContainers",
-                removeContainer:   "{gpii.test.couchdb.harness}.options.removeContainers",
-                port:              "{gpii.test.couchdb.harness}.options.couch.port",
-                hostname:          "{gpii.test.couchdb.harness}.options.couch.hostname"
+                shutdownContainer: "{fluid.test.couchdb.harness}.options.shutdownContainers",
+                removeContainer:   "{fluid.test.couchdb.harness}.options.removeContainers",
+                port:              "{fluid.test.couchdb.harness}.options.couch.port",
+                hostname:          "{fluid.test.couchdb.harness}.options.couch.hostname"
             }
         }
     }
 });
 
-fluid.defaults("gpii.test.couchdb.harness.persistent", {
-    gradeNames: ["gpii.test.couchdb.harness"],
+fluid.defaults("fluid.test.couchdb.harness.persistent", {
+    gradeNames: ["fluid.test.couchdb.harness"],
     cleanDbs: false
 });
 
-fluid.registerNamespace("gpii.test.couchdb.harness.lucene");
-gpii.test.couchdb.harness.lucene.registerCouchContainerName = function (luceneWorker, couchWorker) {
+fluid.registerNamespace("fluid.test.couchdb.harness.lucene");
+fluid.test.couchdb.harness.lucene.registerCouchContainerName = function (luceneWorker, couchWorker) {
     luceneWorker.couchContainerName = couchWorker.containerName;
 };
 
-fluid.defaults("gpii.test.couchdb.harness.lucene", {
-    gradeNames: ["gpii.test.couchdb.harness"],
+fluid.defaults("fluid.test.couchdb.harness.lucene", {
+    gradeNames: ["fluid.test.couchdb.harness"],
     lucene: {
         hostname: "localhost",
         port: 25985
@@ -388,41 +387,41 @@ fluid.defaults("gpii.test.couchdb.harness.lucene", {
     listeners: {
         "combinedStartup.registerCouchContainerName": {
             priority: "after:provisionDbs",
-            funcName: "gpii.test.couchdb.harness.lucene.registerCouchContainerName",
-            // TODO: Update to use {gpii.test.couchdb.worker.lucene} and {gpii.test.couchdb.worker.couch} once potentia ii is merged.
+            funcName: "fluid.test.couchdb.harness.lucene.registerCouchContainerName",
+            // TODO: Update to use {fluid.test.couchdb.worker.lucene} and {fluid.test.couchdb.worker.couch} once potentia ii is merged.
             args: ["{harness}.luceneWorker", "{harness}.couchWorker"] // luceneWorker, couchWorker
         },
         "combinedStartup.isLuceneUp": {
             priority: "after:registerCouchContainerName",
-            // TODO: Update to use {gpii.test.couchdb.worker.lucene}.isUp once potentia ii is merged.
+            // TODO: Update to use {fluid.test.couchdb.worker.lucene}.isUp once potentia ii is merged.
             func: "{harness}.luceneWorker.isUp"
         },
         "combinedStartup.startLuceneIfNeeded": {
             priority: "after:isLuceneUp",
-            funcName: "gpii.test.couchdb.harness.startIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.lucene} once potentia ii is merged.
+            funcName: "fluid.test.couchdb.harness.startIfNeeded",
+            // TODO: Update to use {fluid.test.couchdb.worker.lucene} once potentia ii is merged.
             args:     ["{harness}.luceneWorker", "{arguments}.0"] // worker, isWorkerUp
         },
         "combinedStartup.isLuceneReady": {
             priority: "after:startLuceneIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.lucene}.isReady once potentia ii is merged.
+            // TODO: Update to use {fluid.test.couchdb.worker.lucene}.isReady once potentia ii is merged.
             func:     "{harness}.luceneWorker.isReady"
         },
         "combinedShutdown.shutdownLuceneIfNeeded": {
             priority: "before:shutdownCouchIfNeeded",
-            funcName: "gpii.test.couchdb.harness.shutdownIfNeeded",
-            // TODO: Update to use {gpii.test.couchdb.worker.lucene} once potentia ii is merged.
+            funcName: "fluid.test.couchdb.harness.shutdownIfNeeded",
+            // TODO: Update to use {fluid.test.couchdb.worker.lucene} once potentia ii is merged.
             args:     ["{harness}.luceneWorker"]
         }
     },
     components: {
         luceneWorker: {
-            type: "gpii.test.couchdb.worker.lucene",
+            type: "fluid.test.couchdb.worker.lucene",
             options: {
-                shutdownContainer:  "{gpii.test.couchdb.harness}.options.shutdownContainers",
-                removeContainer:    "{gpii.test.couchdb.harness}.options.removeContainers",
-                port:               "{gpii.test.couchdb.harness}.options.lucene.port",
-                hostname:           "{gpii.test.couchdb.harness}.options.lucene.hostname"
+                shutdownContainer:  "{fluid.test.couchdb.harness}.options.shutdownContainers",
+                removeContainer:    "{fluid.test.couchdb.harness}.options.removeContainers",
+                port:               "{fluid.test.couchdb.harness}.options.lucene.port",
+                hostname:           "{fluid.test.couchdb.harness}.options.lucene.hostname"
             }
         }
     }

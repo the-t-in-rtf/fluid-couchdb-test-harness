@@ -1,13 +1,12 @@
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
 var readline = require("readline");
 var stream   = require("stream");
 
 require("../../");
 
-fluid.registerNamespace("gpii.test.couchdb.worker.vagrant");
+fluid.registerNamespace("fluid.test.couchdb.worker.vagrant");
 
 /**
  *
@@ -37,7 +36,7 @@ fluid.registerNamespace("gpii.test.couchdb.worker.vagrant");
  * @return {Promise} - A `fluid.promise` that will be resolved with the output or rejected on error.
  *
  */
-gpii.test.couchdb.worker.vagrant.parseVagrantOutput = function (rawOutput) {
+fluid.test.couchdb.worker.vagrant.parseVagrantOutput = function (rawOutput) {
     var parsePromise = fluid.promise();
 
     // http://stackoverflow.com/questions/16038705/how-to-wrap-a-buffer-as-a-stream2-readable-stream
@@ -77,13 +76,13 @@ gpii.test.couchdb.worker.vagrant.parseVagrantOutput = function (rawOutput) {
  * @return {Promise} - A `fluid.promise` that will resolve with `true` if our VM is running or `false` if the container is not running, or reject if an error occurs.
  *
  */
-gpii.test.couchdb.worker.vagrant.isUp = function (that) {
+fluid.test.couchdb.worker.vagrant.isUp = function (that) {
     var isUpPromise = fluid.promise();
 
-    var vagrantStatusPromise = gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.vmStatus, that.options, "Checking Vagrant status.", that.options);
+    var vagrantStatusPromise = fluid.test.couchdb.runCommandAsPromise(that.options.commandTemplates.vmStatus, that.options, "Checking Vagrant status.", that.options);
     vagrantStatusPromise.then(
         function (commandOutput) {
-            gpii.test.couchdb.worker.vagrant.parseVagrantOutput(commandOutput).then(
+            fluid.test.couchdb.worker.vagrant.parseVagrantOutput(commandOutput).then(
                 function (containerEntry) {
                     if (fluid.get(containerEntry, "state") === "running") {
                         isUpPromise.resolve(true);
@@ -101,16 +100,16 @@ gpii.test.couchdb.worker.vagrant.isUp = function (that) {
     return isUpPromise;
 };
 
-gpii.test.couchdb.worker.vagrant.startIfNeeded = function (that, isUp) {
+fluid.test.couchdb.worker.vagrant.startIfNeeded = function (that, isUp) {
     if (!isUp) {
-        return gpii.test.couchdb.runCommandAsPromise(that.options.commandTemplates.startup, that.options, "Starting Vagrant VM.", that.options);
+        return fluid.test.couchdb.runCommandAsPromise(that.options.commandTemplates.startup, that.options, "Starting Vagrant VM.", that.options);
     }
 };
 
-fluid.defaults("gpii.test.couchdb.worker.vagrant", {
-    gradeNames: ["gpii.test.couchdb.worker"],
+fluid.defaults("fluid.test.couchdb.worker.vagrant", {
+    gradeNames: ["fluid.test.couchdb.worker"],
     cwd: "@expand:fluid.module.resolvePath({that}.options.cwdPath)",
-    cwdPath: "%gpii-couchdb-test-harness/src/test",
+    cwdPath: "%fluid-couchdb-test-harness/src/test",
     commandTemplates: {
         vmStatus: "vagrant status --machine-readable",
         startup:  "vagrant up",
@@ -118,14 +117,14 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
     },
     invokers: {
         isUp: {
-            funcName: "gpii.test.couchdb.worker.vagrant.isUp",
+            funcName: "fluid.test.couchdb.worker.vagrant.isUp",
             args:     ["{that}"]
         }
     },
     listeners: {
         "combinedShutdown.stopOrRemoveContainers": {
             priority: "after:listContainers",
-            funcName: "gpii.test.couchdb.runCommandAsPromise",
+            funcName: "fluid.test.couchdb.runCommandAsPromise",
             args:     ["{that}.options.commandTemplates.shutdown", "{that}.options", "Halting VM", "{that}.options"]
         },
         "combinedShutdown.fireEvent": {
@@ -142,12 +141,12 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
         },
         "combinedStartup.startIfNeeded": {
             priority: "after:isUp",
-            funcName: "gpii.test.couchdb.worker.vagrant.startIfNeeded",
+            funcName: "fluid.test.couchdb.worker.vagrant.startIfNeeded",
             args:     ["{that}", "{arguments}.0"] // isUp
         },
         "combinedStartup.waitForCouch": {
             priority: "after:startIfNeeded",
-            funcName: "gpii.test.couchdb.checkUrlOnce",
+            funcName: "fluid.test.couchdb.checkUrlOnce",
             args:     ["{that}.options"]
         },
         "combinedStartup.fireEvent": {
@@ -157,8 +156,8 @@ fluid.defaults("gpii.test.couchdb.worker.vagrant", {
     }
 });
 
-fluid.defaults("gpii.test.couchdb.lucene.worker.vagrant", {
-    gradeNames: ["gpii.test.couchdb.worker"],
+fluid.defaults("fluid.test.couchdb.lucene.worker.vagrant", {
+    gradeNames: ["fluid.test.couchdb.worker"],
     listeners: {
         "onCreate.explode": {
             funcName: "fluid.fail",

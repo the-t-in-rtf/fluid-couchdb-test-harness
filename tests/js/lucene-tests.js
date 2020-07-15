@@ -1,16 +1,15 @@
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 
 var jqUnit = require("node-jqunit");
 
-fluid.require("%gpii-couchdb-test-harness");
-gpii.test.couchdb.loadTestingSupport();
+fluid.require("%fluid-couchdb-test-harness");
+fluid.test.couchdb.loadTestingSupport();
 
 var kettle = require("kettle");
 kettle.loadTestingSupport();
 
-fluid.defaults("gpii.tests.couchdb.lucene.request", {
+fluid.defaults("fluid.tests.couchdb.lucene.request", {
     gradeNames: ["kettle.test.request.http"],
     port: 25985,
     path: {
@@ -24,16 +23,16 @@ fluid.defaults("gpii.tests.couchdb.lucene.request", {
     }
 });
 
-fluid.registerNamespace("gpii.test.couchdb.lucene");
+fluid.registerNamespace("fluid.test.couchdb.lucene");
 
-gpii.test.couchdb.lucene.checkResponse = function (response, body, minResults, maxResults) {
+fluid.test.couchdb.lucene.checkResponse = function (response, body, minResults, maxResults) {
     jqUnit.assertEquals("The status code should be as expected.", 200, response.statusCode);
     jqUnit.assertTrue("There should be at least the minimum expected number of results", body.rows.length >= minResults);
     jqUnit.assertTrue("There should be no more than the maximum expected number of results", body.rows.length <= maxResults);
 };
 
-fluid.defaults("gpii.tests.couchdb.lucene.caseHolder", {
-    gradeNames: ["gpii.test.couchdb.caseHolder"],
+fluid.defaults("fluid.tests.couchdb.lucene.caseHolder", {
+    gradeNames: ["fluid.test.couchdb.caseHolder"],
     rawModules: [
         {
             name: "Testing couchdb-lucene harness.",
@@ -49,7 +48,7 @@ fluid.defaults("gpii.tests.couchdb.lucene.caseHolder", {
                         },
                         {
                             event: "{requestWithResults}.events.onComplete",
-                            listener: "gpii.test.couchdb.lucene.checkResponse",
+                            listener: "fluid.test.couchdb.lucene.checkResponse",
                             args: ["{requestWithResults}.nativeResponse", "@expand:JSON.parse({arguments}.0)", 1, 5] // response, body, minResults, maxResults
                         }
                     ]
@@ -65,7 +64,7 @@ fluid.defaults("gpii.tests.couchdb.lucene.caseHolder", {
                         },
                         {
                             event: "{requestWithoutResults}.events.onComplete",
-                            listener: "gpii.test.couchdb.lucene.checkResponse",
+                            listener: "fluid.test.couchdb.lucene.checkResponse",
                             args: ["{requestWithoutResults}.nativeResponse", "@expand:JSON.parse({arguments}.0)", 0, 0] // response, body, minResults, maxResults
                         }
                     ]
@@ -75,21 +74,21 @@ fluid.defaults("gpii.tests.couchdb.lucene.caseHolder", {
     ],
     components: {
         requestWithResults: {
-            type: "gpii.tests.couchdb.lucene.request"
+            type: "fluid.tests.couchdb.lucene.request"
         },
         requestWithoutResults: {
-            type: "gpii.tests.couchdb.lucene.request"
+            type: "fluid.tests.couchdb.lucene.request"
         }
     }
 });
 
-fluid.defaults("gpii.tests.couchdb.lucene.environment", {
-    gradeNames: ["gpii.test.couchdb.lucene.environment"],
+fluid.defaults("fluid.tests.couchdb.lucene.environment", {
+    gradeNames: ["fluid.test.couchdb.lucene.environment"],
     components: {
         testCaseHolder: {
-            type: "gpii.tests.couchdb.lucene.caseHolder"
+            type: "fluid.tests.couchdb.lucene.caseHolder"
         }
     }
 });
 
-fluid.test.runTests("gpii.tests.couchdb.lucene.environment");
+fluid.test.runTests("fluid.tests.couchdb.lucene.environment");

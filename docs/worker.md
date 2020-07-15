@@ -1,9 +1,9 @@
-# `gpii.test.couchdb.worker`
+# `fluid.test.couchdb.worker`
 
 The worker is [Context Aware](https://docs.fluidproject.org/infusion/development/ContextAwareness.html), meaning that it
 brings in an appropriate implementation grade based on your settings.
 
-If `GPII_TEST_COUCH_USE_VAGRANT` is set, the Vagrant worker will be used.  Otherwise, the Docker worker will be used by
+If `FLUID_TEST_COUCH_USE_VAGRANT` is set, the Vagrant worker will be used.  Otherwise, the Docker worker will be used by
 default.
 
 ## Component Options
@@ -38,7 +38,7 @@ This invoker triggers the complex ["promise chaining event"](https://docs.fluidp
 `combinedShutdown`.  Each implementation grade is expected to define the shutdown sequence.
 
 
-## `gpii.test.couchdb.worker.docker`
+## `fluid.test.couchdb.worker.docker`
 
 The default implementation uses [Docker](https://www.docker.com) to run an instance of CouchDB.
 
@@ -53,7 +53,7 @@ In addition to the options for the base grade, this grade also supports the foll
 | `commandTemplates.startContainer`  | `{String}` | The command used to start an existing container.  Will be passed to `fluid.stringTemplate` along with a detected `containerId` value. |
 | `commandTemplates.removeContainer` | `{String}` | The command used to remove the container.  Will be passed to `fluid.stringTemplate` along with a detected `containerId` value. |
 | `commandTemplates.stopContainer`   | `{String}` | The command used to stop the container.  Will be passed to `fluid.stringTemplate` along with a detected `containerId` value. |
-| `containerLabel`                   | `{String}` | The label we will use to identify "our" docker container(s).  Defaults to `gpii-couchdb-test-harness`. |
+| `containerLabel`                   | `{String}` | The label we will use to identify "our" docker container(s).  Defaults to `fluid-couchdb-test-harness`. |
 | `containerName`                    | `{String}` | If a container isn't already available, one will be created and labeled with `containerName`.  The default value is expanded from the component's ID. |
 
 ### Component Invokers
@@ -82,9 +82,9 @@ Depending on the options inherited from the parent grade (see above), on shutdow
 
 By default it does neither.
 
-## `gpii.test.couchdb.worker.vagrant`
+## `fluid.test.couchdb.worker.vagrant`
 
-This grade is only used if the `GPII_TEST_COUCH_USE_VAGRANT` environment variable is set.  It uses a Vagrant VM running
+This grade is only used if the `FLUID_TEST_COUCH_USE_VAGRANT` environment variable is set.  It uses a Vagrant VM running
 Docker to launch the same Docker image as the Docker worker.  It is intended for environments such as Windows 7 where it
 is more difficult to run modern versions of Docker directly.  The `Vagrantfile` in the root of this repository is used
 to provision and control the associated VM.

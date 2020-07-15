@@ -1,23 +1,22 @@
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 
 require("../../");
 
-fluid.registerNamespace("gpii.test.couchdb.worker.external");
+fluid.registerNamespace("fluid.test.couchdb.worker.external");
 
-gpii.test.couchdb.worker.external.isUp = function () {
+fluid.test.couchdb.worker.external.isUp = function () {
     fluid.log("Running using 'external' worker, which we assume is up.");
     var promise = fluid.promise();
     promise.resolve(true);
     return promise;
 };
 
-fluid.defaults("gpii.test.couchdb.worker.external", {
-    gradeNames: ["gpii.test.couchdb.worker"],
+fluid.defaults("fluid.test.couchdb.worker.external", {
+    gradeNames: ["fluid.test.couchdb.worker"],
     invokers: {
         isUp: {
-            funcName: "gpii.test.couchdb.worker.external.isUp"
+            funcName: "fluid.test.couchdb.worker.external.isUp"
         }
     },
     listeners: {
@@ -32,8 +31,8 @@ fluid.defaults("gpii.test.couchdb.worker.external", {
 
 // We have no reasonable way to install couchdb-lucene for external use in CI, so blow up if someone tries to run those
 // tests.
-fluid.defaults("gpii.test.couchdb.lucene.worker.external", {
-    gradeNames: ["gpii.test.couchdb.worker"],
+fluid.defaults("fluid.test.couchdb.lucene.worker.external", {
+    gradeNames: ["fluid.test.couchdb.worker"],
     listeners: {
         "onCreate.explode": {
             funcName: "fluid.fail",

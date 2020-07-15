@@ -3,7 +3,7 @@
 This package provides two key test fixtures for use with the [Fluid IoC Test
 Framework](https://docs.fluidproject.org/infusion/development/IoCTestingFramework.html).
 
-## `gpii.test.couchdb.testEnvironment`
+## `fluid.test.couchdb.testEnvironment`
 
 The CouchDB test environment provided by this package, which configures [the harness provided by this package](./harness.md)
 for use in Fluid IoC Tests.
@@ -16,10 +16,10 @@ for use in Fluid IoC Tests.
 | `couch.hostname` | `{String}`  | The hostname on which CouchDB is running.  Defaults to `localhost`. |
 | `databases`      | `{Object}`  | The databases to create and provision.  See [the harness docs](./harness.md) for details. |
 
-## `gpii.test.couchdb.testEnvironment.lucene`
+## `fluid.test.couchdb.testEnvironment.lucene`
 
 A test environment that provides both CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene).  Uses 
-[the `gpii.test.couchdb.harness.lucene` grade provided by this package](./harness.md).
+[the `fluid.test.couchdb.harness.lucene` grade provided by this package](./harness.md).
 
 ### Component Options
 
@@ -30,7 +30,7 @@ A test environment that provides both CouchDB and [couchdb-lucene](https://githu
 | `databases`      | `{Object}`  | The databases to create and provision.  See [the harness docs](./harness.md) for details. |
 
 
-## `gpii.test.couchdb.caseHolder`
+## `fluid.test.couchdb.caseHolder`
 
 A test case holder intended for use with both of the above test environments.  It:
 
@@ -54,7 +54,7 @@ documentation](./harness.md).
 | `rawModules`    | `{Object}` | The tests to execute.  Note that your tests must be defined in `rawModules` rather than `modules`,  otherwise they will not be able to trigger the automatic startup and shutdown sequence needed to use the harness safely. |
 | `sequenceGrade` | `{String}` | The sequence grade to use with any test that does not already have a sequence grade. |
  
-## `gpii.test.couchdb.request`
+## `fluid.test.couchdb.request`
 
 A grade derived from
 [`kettle.test.request.http`](https://github.com/fluid-project/kettle/blob/master/docs/KettleTestingFramework.md#the-kettle-testing-framework)

@@ -5,12 +5,11 @@
  */
 "use strict";
 var fluid   = require("infusion");
-var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
-fluid.registerNamespace("gpii.test.couchdb.configureCouch");
+fluid.registerNamespace("fluid.test.couchdb.configureCouch");
 
-gpii.test.couchdb.configureCouch.executePutsInOrder = function (that) {
+fluid.test.couchdb.configureCouch.executePutsInOrder = function (that) {
     var promises = [];
     fluid.each(that.options.putOptions, function (singlePutOptions) {
         promises.push(function () {
@@ -37,7 +36,7 @@ gpii.test.couchdb.configureCouch.executePutsInOrder = function (that) {
     );
 };
 
-fluid.defaults("gpii.test.couchdb.configureCouch", {
+fluid.defaults("fluid.test.couchdb.configureCouch", {
     gradeNames: ["fluid.component"],
     putOptions: [
         //  Apparently these are not needed with the default Windows CouchDB installer.
@@ -52,12 +51,12 @@ fluid.defaults("gpii.test.couchdb.configureCouch", {
     ],
     listeners: {
         "onCreate.executePutsInOrder": {
-            funcName: "gpii.test.couchdb.configureCouch.executePutsInOrder",
+            funcName: "fluid.test.couchdb.configureCouch.executePutsInOrder",
             args: ["{that}"]
         }
     }
 });
 
-gpii.test.couchdb.configureCouch();
+fluid.test.couchdb.configureCouch();
 
 

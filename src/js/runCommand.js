@@ -1,12 +1,11 @@
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 var exec  = require("child_process").exec;
 
-fluid.registerNamespace("gpii.test.couchdb");
+fluid.registerNamespace("fluid.test.couchdb");
 
-gpii.test.couchdb.defaultCommandOptions = {
-    cwd: fluid.module.resolvePath("%gpii-couchdb-test-harness")
+fluid.test.couchdb.defaultCommandOptions = {
+    cwd: fluid.module.resolvePath("%fluid-couchdb-test-harness")
 };
 
 /**
@@ -14,7 +13,7 @@ gpii.test.couchdb.defaultCommandOptions = {
  * Unsupported, non-API function.
  *
  * Run a command and then execute a callback.  NOTE:  This function is only intended for intervals and other edge cases.
- * Please use `gpii.test.couchdb.harness.runCommandAsPromise` instead.
+ * Please use `fluid.test.couchdb.harness.runCommandAsPromise` instead.
  *
  * @param {String} commandTemplate - A template representing the command to be run.  Along with `that.options`, will be passed to `fluid.stringTemplate`.
  * @param {Object} commandPayload - The data to use to resolve variables in the template.
@@ -23,8 +22,8 @@ gpii.test.couchdb.defaultCommandOptions = {
  * @param {Object} [commandOptions] - Optional options (cwd, etc.) to use when running commands.
  *
  */
-gpii.test.couchdb.runCommand = function (commandTemplate, commandPayload, callback, message, commandOptions) {
-    var mergedCommandOptions = fluid.extend({}, gpii.test.couchdb.defaultCommandOptions, commandOptions);
+fluid.test.couchdb.runCommand = function (commandTemplate, commandPayload, callback, message, commandOptions) {
+    var mergedCommandOptions = fluid.extend({}, fluid.test.couchdb.defaultCommandOptions, commandOptions);
     var filteredCommandOptions = fluid.filterKeys(mergedCommandOptions, [
         "cwd", "env", "encoding", "shell", "timeout", "maxBuffer", "killSignal", "uid", "gid", "windowsHide"
     ]);
@@ -50,11 +49,11 @@ gpii.test.couchdb.runCommand = function (commandTemplate, commandPayload, callba
  * @return {Promise} A `fluid.promise` instance that will be resolved when the command completes successfully or rejected if there's an error.
  *
  */
-gpii.test.couchdb.runCommandAsPromise = function (commandTemplate, commandPayload, message, commandOptions) {
+fluid.test.couchdb.runCommandAsPromise = function (commandTemplate, commandPayload, message, commandOptions) {
     var commandPromise = fluid.promise();
 
     try {
-        gpii.test.couchdb.runCommand(commandTemplate, commandPayload, function (error, stdout) {
+        fluid.test.couchdb.runCommand(commandTemplate, commandPayload, function (error, stdout) {
             if (error) {
                 // Neither the "message" or "stack" property of the error survive the eventual trip
                 // through JSON.stringify, so we need to manually shove the output of toString into a
