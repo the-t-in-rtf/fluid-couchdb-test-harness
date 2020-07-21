@@ -41,7 +41,7 @@ fluid.test.couchdb.checkUrlRepeatedly = function (options) {
     var urlCheckPromise = fluid.promise();
     var timeout = setTimeout( function () {
         if (!urlCheckPromise.disposition) {
-            urlCheckPromise.reject("Timed out waiting for URL '" + options.baseURL + "' to respond.");
+            urlCheckPromise.reject("Timed out waiting for URL '" + options.baseUrl + "' to respond.");
         }
     }, options.setupTimeout || 30000);
 
