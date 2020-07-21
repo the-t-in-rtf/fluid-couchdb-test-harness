@@ -105,9 +105,12 @@ fluid.defaults("fluid.test.couchdb.worker.docker", {
             }
         }
     },
+    couchVersion: "2.3.1",
+    couchUsername: "admin",
+    couchPassword: "admin",
     commandTemplates: {
         listContainers:  "docker ps -a --filter label=%options.containerLabel --format '{{ json . }}'",
-        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5984 --name %containerName couchdb:2.3.1",
+        createContainer: "docker run -d -l %options.containerLabel -p %options.port:5984 --name %containerName -e COUCHDB_USER=%options.couchUsername -e COUCHDB_PASSWORD=%options.couchPassword couchdb:%options.couchVersion",
         startContainer:  "docker start %containerId",
         removeContainer: "docker rm -f %containerId",
         stopContainer:   "docker stop %containerId"

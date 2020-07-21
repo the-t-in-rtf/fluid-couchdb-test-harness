@@ -35,12 +35,11 @@ fluid.defaults("fluid.test.couchdb.worker.base", {
     baseUrl: {
         expander: {
             funcName: "fluid.stringTemplate",
-            args: ["{that}.options.templates.baseUrl", { hostname: "{that}.options.hostname", port: "{that}.options.port"}]
+            args: ["{that}.options.templates.baseUrl", { hostname: "{that}.options.hostname", port: "{that}.options.port", username: "{that}.options.username", password: "{that}.options.password"}]
         }
     },
     templates: {
-        baseUrl: "http://%hostname:%port",
-        adminBaseUrl: "http://%username:%password@%hostname:%port"
+        baseUrl: "http://%username:%password@%hostname:%port"
     },
     events: {
         combinedShutdown:   null,
