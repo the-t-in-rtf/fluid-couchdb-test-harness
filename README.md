@@ -10,12 +10,29 @@ by this package](./docs/test-fixtures.md).
 
 The harness provided by this package can be run in one of three modes:
 
-1. By default, the harness attempts to launch a [Docker](https://www.docker.com) container with an instance of CouchDB.
-2. If you are in an environment (such as Windows 7) where running Docker is not possible, you can set the
-   `FLUID_TEST_COUCH_USE_VAGRANT` environment variable to use [Vagrant](https://www.vagrantup.com) instead.  See below
-   for details.
-3. If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
-   tests in this package (25984) and set the `FLUID_TEST_COUCH_USE_EXTERNAL` environment variable.
+1. Docker
+2. Vagrant
+3. "External"
+
+### Docker
+
+By default, the harness attempts to launch a [Docker](https://www.docker.com) container with an instance of CouchDB.
+
+## Vagrant
+
+If you are in an environment (such as Windows 7) where running Docker is not possible, you can set the
+`FLUID_TEST_COUCH_USE_VAGRANT` environment variable to use [Vagrant](https://www.vagrantup.com) instead.  See below
+for details.
+
+## "External"
+
+If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
+tests in this package (25984) and set the `FLUID_TEST_COUCH_USE_EXTERNAL` environment variable.  This mode is used by
+our GitHub CI setup.
+
+Please note, when using an "external" instance, you must ensure that an administrative user named `admin` exists, whose
+password is set to `admin`.  You can see an example of the required configuration for GitHub Actions in this package's
+`.github` folder.
 
 ## Running the Tests
 
