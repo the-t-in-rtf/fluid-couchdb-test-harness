@@ -1,6 +1,6 @@
 {
     "name": "fluid-couchdb-test-harness",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "A library to assist in testing CouchDB integration within the Fluid ecosystem.",
     "main": "index.js",
     "scripts": {
