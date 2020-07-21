@@ -1,6 +1,6 @@
 /*
 
-    A caseholder for use with `gpii.test.couchdb.harness`, which updates all tests to:
+    A caseholder for use with `fluid.test.couchdb.harness`, which updates all tests to:
 
     1. Start the harness before the test.
     2. Stop the harness after the test.
@@ -9,9 +9,8 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
-fluid.registerNamespace("gpii.test.couchdb.caseHolder");
+fluid.registerNamespace("fluid.test.couchdb.caseHolder");
 
 /**
  *
@@ -25,7 +24,7 @@ fluid.registerNamespace("gpii.test.couchdb.caseHolder");
  * @return {Object} - The expanded test definitions.
  *
  */
-gpii.test.couchdb.caseHolder.expandModules = function (rawModules, sequenceGrade) {
+fluid.test.couchdb.caseHolder.expandModules = function (rawModules, sequenceGrade) {
     var expandedModules = fluid.copy(rawModules);
 
     for (var a = 0; a < expandedModules.length; a++) {
@@ -41,7 +40,7 @@ gpii.test.couchdb.caseHolder.expandModules = function (rawModules, sequenceGrade
     return expandedModules;
 };
 
-fluid.defaults("gpii.test.couchdb.sequenceElement.startHarness", {
+fluid.defaults("fluid.test.couchdb.sequenceElement.startHarness", {
     gradeNames: "fluid.test.sequenceElement",
     sequence: [{
         // TODO: Improve this IoC reference once potentia ii is merged.
@@ -51,7 +50,7 @@ fluid.defaults("gpii.test.couchdb.sequenceElement.startHarness", {
     }]
 });
 
-fluid.defaults("gpii.test.couchdb.sequenceElement.stopHarness", {
+fluid.defaults("fluid.test.couchdb.sequenceElement.stopHarness", {
     gradeNames: "fluid.test.sequenceElement",
     sequence: [{
         // TODO: Improve this IoC reference once potentia ii is merged.
@@ -61,28 +60,28 @@ fluid.defaults("gpii.test.couchdb.sequenceElement.stopHarness", {
     }]
 });
 
-fluid.defaults("gpii.test.couchdb.sequence", {
+fluid.defaults("fluid.test.couchdb.sequence", {
     gradeNames: "fluid.test.sequence",
     sequenceElements: {
         startHarness: {
-            gradeNames: "gpii.test.couchdb.sequenceElement.startHarness",
+            gradeNames: "fluid.test.couchdb.sequenceElement.startHarness",
             priority:   "before:sequence"
         },
         stopHarness: {
-            gradeNames: "gpii.test.couchdb.sequenceElement.stopHarness",
+            gradeNames: "fluid.test.couchdb.sequenceElement.stopHarness",
             priority:   "after:sequence"
         }
     }
 });
 
-fluid.defaults("gpii.test.couchdb.caseHolder", {
+fluid.defaults("fluid.test.couchdb.caseHolder", {
     gradeNames: ["fluid.test.testCaseHolder"],
-    sequenceGrade: "gpii.test.couchdb.sequence",
+    sequenceGrade: "fluid.test.couchdb.sequence",
     mergePolicy: {
         rawModules: "noexpand, nomerge"
     },
     moduleSource: {
-        funcName: "gpii.test.couchdb.caseHolder.expandModules",
+        funcName: "fluid.test.couchdb.caseHolder.expandModules",
         args:    ["{that}.options.rawModules", "{that}.options.sequenceGrade"]
     }
 });

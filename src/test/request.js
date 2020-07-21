@@ -1,8 +1,9 @@
 "use strict";
 var fluid = require("infusion");
 
-fluid.defaults("gpii.test.couchdb.request", {
+fluid.defaults("fluid.test.couchdb.request", {
     gradeNames: ["kettle.test.request.http"],
     method:     "GET",
-    port:       "{testEnvironment}.options.couch.port"
+    port:       "{testEnvironment}.options.couch.port",
+    auth:       "admin:admin"
 });

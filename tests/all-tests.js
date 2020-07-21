@@ -1,7 +1,6 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 
 require("../src/js/worker");
 
@@ -15,6 +14,6 @@ require("./js/persistence-tests");
 require("./js/view_tests");
 
 // The couchdb-lucene tests can only run in Docker.
-if (!gpii.test.couchdb.worker.useVagrant() && !gpii.test.couchdb.worker.useExternal()) {
+if (!fluid.test.couchdb.worker.useVagrant() && !fluid.test.couchdb.worker.useExternal()) {
     require("./js/lucene-tests");
 }

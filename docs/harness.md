@@ -1,4 +1,4 @@
-## `gpii.test.couchdb.harness`
+## `fluid.test.couchdb.harness`
 
 The CouchDB harness provided by this package:
 
@@ -35,7 +35,7 @@ require("my-package");
 require("my-other-package");
 
 fluid.defaults("my.harness", {
-    gradeNames: ["gpii.test.couchdb.harness"],
+    gradeNames: ["fluid.test.couchdb.harness"],
     databases: {
         singleFile: {
             data: "%my-package/tests/data/onePayload.json"
@@ -109,20 +109,20 @@ This invoker triggers the complex ["promise chaining event"](https://docs.fluidp
 You can add your own shutdown steps using additional event listeners.  For more details, see the "Promise Chaining
 Events" section below.
 
-## `gpii.test.couchdb.harness.persistent`
+## `fluid.test.couchdb.harness.persistent`
 
 This is a convenience grade that matches the previous grade structure of this package. It is identical to
-`gpii.test.couchdb.harness` but has `options.cleanOnStartup` set to `false`.  If you use this grade and need to reset the data,
+`fluid.test.couchdb.harness` but has `options.cleanOnStartup` set to `false`.  If you use this grade and need to reset the data,
 you must manually call `{that}.provisionDbs()` (see above).
 
-## `gpii.test.couchdb.harness.lucene`
+## `fluid.test.couchdb.harness.lucene`
 
 A harness that starts both a CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene) instance for use in
 Fluid IoC tests.
 
 ### Component Options
 
-In addition to the options for `gpii.test.couchdb.harness` above, this grade has the following unique options:
+In addition to the options for `fluid.test.couchdb.harness` above, this grade has the following unique options:
 
 | Option            | Type        | Description |
 | ----------------- | ----------- | ----------- |
@@ -150,7 +150,7 @@ indexing to occur.  We might use code like the following to accomplish this:
 
         "combinedStartup.startIfNeeded": {
             priority: "first",
-            funcName: "gpii.test.couchdb.harness.startIfNeeded",
+            funcName: "fluid.test.couchdb.harness.startIfNeeded",
             args:     ["{that}"]
         },
 
@@ -188,7 +188,7 @@ my.custom.harness.indexView = function (that) {
 };
 
 fluid.defaults("my.custom.harness", {
-    gradeNames: ["gpii.test.couchdb.harness"],
+    gradeNames: ["fluid.test.couchdb.harness"],
     templates: {
         viewUrl: "%couch.baseUrl/mydb/_design/docName/_view/viewName",
     },

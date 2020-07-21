@@ -1,14 +1,13 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
 require("../js/harness");
 require("./harness-config");
 
-fluid.registerNamespace("gpii.test.couchdb.environment");
+fluid.registerNamespace("fluid.test.couchdb.environment");
 
-fluid.defaults("gpii.test.couchdb.environment.base", {
+fluid.defaults("fluid.test.couchdb.environment.base", {
     gradeNames: ["fluid.test.testEnvironment"],
     couch: {
         port: 25984,
@@ -17,25 +16,25 @@ fluid.defaults("gpii.test.couchdb.environment.base", {
     databases: {},
     components: {
         harness: {
-            type: "gpii.test.couchdb.harness",
+            type: "fluid.test.couchdb.harness",
             options: {
-                couch: "{gpii.test.couchdb.environment.base}.options.couch",
-                databases: "{gpii.test.couchdb.environment.base}.options.databases"
+                couch: "{fluid.test.couchdb.environment.base}.options.couch",
+                databases: "{fluid.test.couchdb.environment.base}.options.databases"
             }
         }
     }
 });
 
-fluid.defaults("gpii.test.couchdb.environment", {
-    gradeNames: ["gpii.test.couchdb.environment.base"],
-    databases:  gpii.test.couchdb.harness.config.databases
+fluid.defaults("fluid.test.couchdb.environment", {
+    gradeNames: ["fluid.test.couchdb.environment.base"],
+    databases:  fluid.test.couchdb.harness.config.databases
 });
 
-fluid.defaults("gpii.test.couchdb.lucene.environment", {
-    gradeNames: ["gpii.test.couchdb.environment"],
+fluid.defaults("fluid.test.couchdb.lucene.environment", {
+    gradeNames: ["fluid.test.couchdb.environment"],
     components: {
         harness: {
-            type: "gpii.test.couchdb.harness.lucene"
+            type: "fluid.test.couchdb.harness.lucene"
         }
     }
 });

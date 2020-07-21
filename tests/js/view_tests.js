@@ -3,20 +3,19 @@
 "use strict";
 var fluid = require("infusion");
 fluid.logObjectRenderChars = 20480;
-var gpii  = fluid.registerNamespace("gpii");
 
-fluid.require("%gpii-couchdb-test-harness");
-gpii.test.couchdb.loadTestingSupport();
+fluid.require("%fluid-couchdb-test-harness");
+fluid.test.couchdb.loadTestingSupport();
 
 var kettle = require("kettle");
 kettle.loadTestingSupport();
 
 require("./lib/checkResponse");
 
-fluid.registerNamespace("gpii.tests.couchdb.views");
+fluid.registerNamespace("fluid.tests.couchdb.views");
 
-fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
-    gradeNames: ["gpii.test.couchdb.caseHolder"],
+fluid.defaults("fluid.tests.couchdb.views.caseHolder", {
+    gradeNames: ["fluid.test.couchdb.caseHolder"],
     expected: {
         noReduce: {
             "total_rows":4,
@@ -43,7 +42,7 @@ fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
                             func: "{noReduceRequest}.send"
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{noReduceRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{noReduceRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.noReduce"]
@@ -58,7 +57,7 @@ fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
                             func: "{allReducedRequest}.send"
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{allReducedRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{allReducedRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.allReduced"]
@@ -73,7 +72,7 @@ fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
                             func: "{reducedWithKeyRequest}.send"
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{reducedWithKeyRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{reducedWithKeyRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.reducedWithKey"]
@@ -85,19 +84,19 @@ fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
     ],
     components: {
         noReduceRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/views/_design/count/_view/count?reduce=false"
             }
         },
         allReducedRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/views/_design/count/_view/count?group=true"
             }
         },
         reducedWithKeyRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "http://localhost:25984/views/_design/count/_view/count?group=true&key=\"beast\""
             }
@@ -105,13 +104,13 @@ fluid.defaults("gpii.tests.couchdb.views.caseHolder", {
     }
 });
 
-fluid.defaults("gpii.tests.couchdb.views.environment", {
-    gradeNames: ["gpii.test.couchdb.environment"],
+fluid.defaults("fluid.tests.couchdb.views.environment", {
+    gradeNames: ["fluid.test.couchdb.environment"],
     components: {
         testCaseHolder: {
-            type: "gpii.tests.couchdb.views.caseHolder"
+            type: "fluid.tests.couchdb.views.caseHolder"
         }
     }
 });
 
-fluid.test.runTests("gpii.tests.couchdb.views.environment");
+fluid.test.runTests("fluid.tests.couchdb.views.environment");

@@ -3,29 +3,28 @@
 "use strict";
 var fluid = require("infusion");
 fluid.logObjectRenderChars = 20480;
-var gpii  = fluid.registerNamespace("gpii");
 
-fluid.require("%gpii-couchdb-test-harness");
-gpii.test.couchdb.loadTestingSupport();
+fluid.require("%fluid-couchdb-test-harness");
+fluid.test.couchdb.loadTestingSupport();
 
 var kettle = require("kettle");
 kettle.loadTestingSupport();
 
 require("./lib/checkResponse");
 
-fluid.registerNamespace("gpii.tests.couchdb.basic");
+fluid.registerNamespace("fluid.tests.couchdb.basic");
 
-gpii.tests.couchdb.basic.checkRecordAndStartDelete = function (response, body, expectedStatus, expectedBody, deleteRequest) {
+fluid.tests.couchdb.basic.checkRecordAndStartDelete = function (response, body, expectedStatus, expectedBody, deleteRequest) {
     var record = JSON.parse(body);
-    gpii.test.couchdb.checkResponse(response, body, expectedStatus, expectedBody);
+    fluid.test.couchdb.checkResponse(response, body, expectedStatus, expectedBody);
 
     // DELETE requests must reference a specific revision, as in:
     // DELETE /recipes/FishStew?rev=1-9c65296036141e575d32ba9c034dd3ee
     deleteRequest.send({}, { termMap: { rev: record._rev } });
 };
 
-fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
-    gradeNames: ["gpii.test.couchdb.caseHolder"],
+fluid.defaults("fluid.tests.couchdb.basic.caseHolder", {
+    gradeNames: ["fluid.test.couchdb.caseHolder"],
     expected: {
         root:             { couchdb:"Welcome","vendor":{ "name":"The Apache Software Foundation" } },
         massive:          { total_rows: 150 },
@@ -50,7 +49,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{rootRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{rootRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.root"]
@@ -66,7 +65,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{massiveRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{massiveRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.massive"]
@@ -82,7 +81,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{noDataRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{noDataRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.noData"]
@@ -98,7 +97,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{readRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{readRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.read"]
@@ -114,7 +113,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{supplementalReadRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{supplementalReadRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.supplementalRead"]
@@ -130,7 +129,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{nonBulkRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{nonBulkRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.nonBulkRequest"]
@@ -148,14 +147,14 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                         },
                         // confirm that the record exists now and delete the latest revision.
                         {
-                            listener: "gpii.tests.couchdb.basic.checkRecordAndStartDelete",
+                            listener: "fluid.tests.couchdb.basic.checkRecordAndStartDelete",
                             event:    "{preDeleteRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{preDeleteRequest}.nativeResponse", "{arguments}.0", 200, "{that}.options.expected.beforeDelete", "{deleteRequest}"]
                         },
                         // The delete request should be successful.
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{deleteRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{deleteRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.afterDelete"]
@@ -166,7 +165,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{verifyDeleteRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{verifyDeleteRequest}.nativeResponse", "{arguments}.0", 404]
@@ -183,7 +182,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{preInsertRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{preInsertRequest}.nativeResponse", "{arguments}.0", 404]
@@ -194,7 +193,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: ["{that}.options.expected.insert"]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{insertRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{insertRequest}.nativeResponse", "{arguments}.0", 201]
@@ -205,7 +204,7 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
                             args: [{}]
                         },
                         {
-                            listener: "gpii.test.couchdb.checkResponse",
+                            listener: "fluid.test.couchdb.checkResponse",
                             event:    "{verifyInsertRequest}.events.onComplete",
                             //        (response, body, expectedStatus, expectedBody)
                             args:     ["{verifyInsertRequest}.nativeResponse", "{arguments}.0", 200, "{testCaseHolder}.options.expected.insert"]
@@ -217,43 +216,43 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
     ],
     components: {
         rootRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/"
             }
         },
         massiveRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/massive/_all_docs"
             }
         },
         noDataRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/nodata/_all_docs"
             }
         },
         readRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/sample/foo"
             }
         },
         supplementalReadRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/sample/supplemental"
             }
         },
         preDeleteRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/sample/todelete"
             }
         },
         deleteRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path:   "/sample/todelete?rev=%rev",
                 method: "DELETE",
@@ -261,32 +260,32 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
             }
         },
         verifyDeleteRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/sample/todelete"
             }
         },
         preInsertRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path:   "/sample/toinsert"
             }
         },
         insertRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path:   "/sample/toinsert",
                 method: "PUT"
             }
         },
         verifyInsertRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path:   "/sample/toinsert"
             }
         },
         nonBulkRequest: {
-            type: "gpii.test.couchdb.request",
+            type: "fluid.test.couchdb.request",
             options: {
                 path: "/nonbulk/_all_docs"
             }
@@ -294,13 +293,13 @@ fluid.defaults("gpii.tests.couchdb.basic.caseHolder", {
     }
 });
 
-fluid.defaults("gpii.tests.couchdb.basic.environment", {
-    gradeNames: ["gpii.test.couchdb.environment"],
+fluid.defaults("fluid.tests.couchdb.basic.environment", {
+    gradeNames: ["fluid.test.couchdb.environment"],
     components: {
         testCaseHolder: {
-            type: "gpii.tests.couchdb.basic.caseHolder"
+            type: "fluid.tests.couchdb.basic.caseHolder"
         }
     }
 });
 
-fluid.test.runTests("gpii.tests.couchdb.basic.environment");
+fluid.test.runTests("fluid.tests.couchdb.basic.environment");

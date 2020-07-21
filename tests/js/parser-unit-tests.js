@@ -6,19 +6,18 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
 var jqUnit = require("node-jqunit");
 jqUnit.module("Command output parser tests.");
 
-fluid.registerNamespace("gpii.tests.couchdb.parser");
+fluid.registerNamespace("fluid.tests.couchdb.parser");
 
 require("../../src/js/vagrantWorker");
 
-gpii.tests.couchdb.parser.runTestDef = function (testDef) {
+fluid.tests.couchdb.parser.runTestDef = function (testDef) {
     jqUnit.asyncTest(testDef.message, function () {
         var inputAsBuffer = Buffer.from(testDef.input);
-        var parsePromise = gpii.test.couchdb.worker.vagrant.parseVagrantOutput(inputAsBuffer);
+        var parsePromise = fluid.test.couchdb.worker.vagrant.parseVagrantOutput(inputAsBuffer);
         parsePromise.then(
             function (parserOutput) {
                 jqUnit.start();
@@ -32,7 +31,7 @@ gpii.tests.couchdb.parser.runTestDef = function (testDef) {
     });
 };
 
-fluid.defaults("gpii.tests.couchdb.parser", {
+fluid.defaults("fluid.tests.couchdb.parser", {
     gradeNames: ["fluid.component"],
     testDefs: {
         carriage: {
@@ -70,7 +69,7 @@ fluid.defaults("gpii.tests.couchdb.parser", {
     },
     invokers: {
         runSingleTest: {
-            funcName: "gpii.tests.couchdb.parser.runTestDef",
+            funcName: "fluid.tests.couchdb.parser.runTestDef",
             args:     ["{arguments}.0"]
         }
     },
@@ -82,4 +81,4 @@ fluid.defaults("gpii.tests.couchdb.parser", {
     }
 });
 
-gpii.tests.couchdb.parser();
+fluid.tests.couchdb.parser();

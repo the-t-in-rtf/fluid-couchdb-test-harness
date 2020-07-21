@@ -25,7 +25,7 @@ jobs:
 
     env:
       HEADLESS: true
-      GPII_TEST_COUCH_USE_EXTERNAL: true
+      FLUID_TEST_COUCH_USE_EXTERNAL: true
 
     steps:
       - uses: actions/checkout@v2

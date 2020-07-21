@@ -6,28 +6,27 @@
 /* eslint-env node */
 "use strict";
 var fluid  = require("infusion");
-var gpii   = fluid.registerNamespace("gpii");
 
 var kettle = require("kettle");
 kettle.loadTestingSupport();
 
 require("../../");
 
-gpii.test.couchdb.loadTestingSupport();
+fluid.test.couchdb.loadTestingSupport();
 
-fluid.defaults("gpii.tests.couchdb.persistent.request", {
-    gradeNames: ["gpii.test.couchdb.request"],
+fluid.defaults("fluid.tests.couchdb.persistent.request", {
+    gradeNames: ["fluid.test.couchdb.request"],
     path:   "/persistence/new",
     method: "GET"
 });
 
-fluid.defaults("gpii.tests.couchdb.persistent.request.view", {
-    gradeNames: ["gpii.tests.couchdb.persistent.request"],
+fluid.defaults("fluid.tests.couchdb.persistent.request.view", {
+    gradeNames: ["fluid.tests.couchdb.persistent.request"],
     path: "/persistence/_design/persistence/_view/byId?startKey=%22new%22"
 });
 
-fluid.defaults("gpii.tests.couchdb.persistent.caseHolder", {
-    gradeNames: ["gpii.test.couchdb.caseHolder"],
+fluid.defaults("fluid.tests.couchdb.persistent.caseHolder", {
+    gradeNames: ["fluid.test.couchdb.caseHolder"],
     persistenceRecord: { _id: "new", foo: "bar"},
     rawModules: [{
         name: "Testing persistence within a single restart.",
@@ -143,50 +142,50 @@ fluid.defaults("gpii.tests.couchdb.persistent.caseHolder", {
     }],
     components: {
         getViewBeforeInsertRequest: {
-            type: "gpii.tests.couchdb.persistent.request.view"
+            type: "fluid.tests.couchdb.persistent.request.view"
         },
         insertRequest: {
-            type: "gpii.tests.couchdb.persistent.request",
+            type: "fluid.tests.couchdb.persistent.request",
             options: {
                 method: "PUT"
             }
         },
         getAfterInsertRequest: {
-            type: "gpii.tests.couchdb.persistent.request"
+            type: "fluid.tests.couchdb.persistent.request"
         },
         getViewAfterInsertRequest: {
-            type: "gpii.tests.couchdb.persistent.request.view"
+            type: "fluid.tests.couchdb.persistent.request.view"
         },
         getAfterRestartRequest: {
-            type: "gpii.tests.couchdb.persistent.request"
+            type: "fluid.tests.couchdb.persistent.request"
         },
         getViewAfterRestartRequest: {
-            type: "gpii.tests.couchdb.persistent.request.view"
+            type: "fluid.tests.couchdb.persistent.request.view"
         },
         getAfterResetRequest: {
-            type: "gpii.tests.couchdb.persistent.request"
+            type: "fluid.tests.couchdb.persistent.request"
         },
         getViewAfterResetRequest: {
-            type: "gpii.tests.couchdb.persistent.request.view"
+            type: "fluid.tests.couchdb.persistent.request.view"
         }
     }
 });
 
-fluid.registerNamespace("gpii.tests.couchdb.persistent.environment");
+fluid.registerNamespace("fluid.tests.couchdb.persistent.environment");
 
-fluid.defaults("gpii.tests.couchdb.persistent.environment", {
-    gradeNames: ["gpii.test.couchdb.environment.base"],
+fluid.defaults("fluid.tests.couchdb.persistent.environment", {
+    gradeNames: ["fluid.test.couchdb.environment.base"],
     components: {
         caseHolder: {
-            type: "gpii.tests.couchdb.persistent.caseHolder"
+            type: "fluid.tests.couchdb.persistent.caseHolder"
         },
         harness: {
-            type: "gpii.test.couchdb.harness.persistent"
+            type: "fluid.test.couchdb.harness.persistent"
         }
     },
     databases: {
-        persistence: { data: ["%gpii-couchdb-test-harness/tests/data/persistence"]}
+        persistence: { data: ["%fluid-couchdb-test-harness/tests/data/persistence"]}
     }
 });
 
-fluid.test.runTests("gpii.tests.couchdb.persistent.environment");
+fluid.test.runTests("fluid.tests.couchdb.persistent.environment");

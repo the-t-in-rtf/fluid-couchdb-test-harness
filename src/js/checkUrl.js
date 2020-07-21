@@ -1,10 +1,9 @@
 "use strict";
 var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
 
 var request = require("request");
 
-fluid.registerNamespace("gpii.test.couchdb");
+fluid.registerNamespace("fluid.test.couchdb");
 
 /**
  *
@@ -14,7 +13,7 @@ fluid.registerNamespace("gpii.test.couchdb");
  * @return {Promise} - A `fluid.promise` instance that will be resolved when the check is complete or rejected on error.  The promise will be resolved with `true` if CouchDB is reachable, and `false` otherwise.
  *
  */
-gpii.test.couchdb.checkUrlOnce = function (options) {
+fluid.test.couchdb.checkUrlOnce = function (options) {
     var urlCheckPromise = fluid.promise();
     request.get(options.baseUrl, function (error, response) {
         if (error) {
@@ -38,23 +37,23 @@ gpii.test.couchdb.checkUrlOnce = function (options) {
  * @return {Promise} - A `fluid.promise` that will be resolved when couch is available or rejected if the instance doesn't respond in time.
  *
  */
-gpii.test.couchdb.checkUrlRepeatedly = function (options) {
+fluid.test.couchdb.checkUrlRepeatedly = function (options) {
     var urlCheckPromise = fluid.promise();
     var timeout = setTimeout( function () {
         if (!urlCheckPromise.disposition) {
-            urlCheckPromise.reject("Timed out waiting for URL '" + options.baseURL + "' to respond.");
+            urlCheckPromise.reject("Timed out waiting for URL '" + options.baseUrl + "' to respond.");
         }
     }, options.setupTimeout || 30000);
 
     var interval = setInterval(function () {
-        var singleCouchCheckPromise = gpii.test.couchdb.checkUrlOnce(options);
+        var singleCouchCheckPromise = fluid.test.couchdb.checkUrlOnce(options);
         singleCouchCheckPromise.then(
             function (isUp) {
                 if (isUp) {
                     clearTimeout(timeout);
                     clearInterval(interval);
 
-                    // Workaround for GPII-3989 to reduce the frequency of double promise resolution.
+                    // Workaround for fluid-3989 to reduce the frequency of double promise resolution.
                     if (!urlCheckPromise.disposition) {
                         urlCheckPromise.resolve();
                     }

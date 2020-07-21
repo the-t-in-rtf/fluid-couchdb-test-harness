@@ -1,11 +1,10 @@
 /* eslint-env node */
 "use strict";
 var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
 
 var jqUnit = require("node-jqunit");
 
-fluid.registerNamespace("gpii.test.couchdb");
+fluid.registerNamespace("fluid.test.couchdb");
 /**
  *
  * A static function that can be used to inspect an HTTP response and confirm whether its status and body are as expected.
@@ -16,7 +15,7 @@ fluid.registerNamespace("gpii.test.couchdb");
  * @param {Anything} expectedBody - The expected body.
  *
  */
-gpii.test.couchdb.checkResponse = function (response, body, expectedStatus, expectedBody) {
+fluid.test.couchdb.checkResponse = function (response, body, expectedStatus, expectedBody) {
     expectedStatus = expectedStatus ? expectedStatus : 200;
 
     var bodyData = JSON.parse(body);
