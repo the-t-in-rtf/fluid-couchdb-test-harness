@@ -13,7 +13,7 @@ fluid.test.couchdb.worker.external.isUp = function () {
 };
 
 fluid.defaults("fluid.test.couchdb.worker.external", {
-    gradeNames: ["fluid.test.couchdb.worker"],
+    gradeNames: ["fluid.test.couchdb.worker.base"],
     invokers: {
         isUp: {
             funcName: "fluid.test.couchdb.worker.external.isUp"
@@ -32,7 +32,7 @@ fluid.defaults("fluid.test.couchdb.worker.external", {
 // We have no reasonable way to install couchdb-lucene for external use in CI, so blow up if someone tries to run those
 // tests.
 fluid.defaults("fluid.test.couchdb.lucene.worker.external", {
-    gradeNames: ["fluid.test.couchdb.worker"],
+    gradeNames: ["fluid.test.couchdb.worker.base"],
     listeners: {
         "onCreate.explode": {
             funcName: "fluid.fail",

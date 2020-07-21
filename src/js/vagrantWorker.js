@@ -107,7 +107,7 @@ fluid.test.couchdb.worker.vagrant.startIfNeeded = function (that, isUp) {
 };
 
 fluid.defaults("fluid.test.couchdb.worker.vagrant", {
-    gradeNames: ["fluid.test.couchdb.worker"],
+    gradeNames: ["fluid.test.couchdb.worker.base"],
     cwd: "@expand:fluid.module.resolvePath({that}.options.cwdPath)",
     cwdPath: "%fluid-couchdb-test-harness/src/test",
     commandTemplates: {
@@ -157,7 +157,7 @@ fluid.defaults("fluid.test.couchdb.worker.vagrant", {
 });
 
 fluid.defaults("fluid.test.couchdb.lucene.worker.vagrant", {
-    gradeNames: ["fluid.test.couchdb.worker"],
+    gradeNames: ["fluid.test.couchdb.worker.base"],
     listeners: {
         "onCreate.explode": {
             funcName: "fluid.fail",
