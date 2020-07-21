@@ -88,8 +88,10 @@ fluid.test.couchdb.harness.provisionSingleDbIfNeeded = function (that, dbDef, db
         var dbProvisioningPromise = fluid.promise();
         try {
             var dbUrl = fluid.stringTemplate(
-                that.options.templates.dbUrl,
+                that.options.templates.adminBaseUrl,
                 {
+                    username: that.couchWorker.options.username,
+                    password: that.couchWorker.options.password,
                     couchUrl: that.couchWorker.options.baseUrl,
                     dbName:   dbName
                 }

@@ -30,6 +30,8 @@ fluid.defaults("fluid.test.couchdb.worker.base", {
     setupTimeout: 30000,
     hostname: "localhost",
     port: 25984,
+    username: "admin",
+    password: "admin",
     baseUrl: {
         expander: {
             funcName: "fluid.stringTemplate",
@@ -37,7 +39,8 @@ fluid.defaults("fluid.test.couchdb.worker.base", {
         }
     },
     templates: {
-        baseUrl: "http://%hostname:%port"
+        baseUrl: "http://%hostname:%port",
+        adminBaseUrl: "http://%username:%password@%hostname:%port"
     },
     events: {
         combinedShutdown:   null,
