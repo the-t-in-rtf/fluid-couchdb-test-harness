@@ -10,12 +10,35 @@ by this package](./docs/test-fixtures.md).
 
 The harness provided by this package can be run in one of three modes:
 
-1. By default, the harness attempts to launch a [Docker](https://www.docker.com) container with an instance of CouchDB.
-2. If you are in an environment (such as Windows 7) where running Docker is not possible, you can set the
-   `FLUID_TEST_COUCH_USE_VAGRANT` environment variable to use [Vagrant](https://www.vagrantup.com) instead.  See below
-   for details.
-3. If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
-   tests in this package (25984) and set the `FLUID_TEST_COUCH_USE_EXTERNAL` environment variable.
+1. Docker
+2. Vagrant
+3. "External"
+
+### Docker
+
+By default, the harness attempts to launch a [Docker](https://www.docker.com) container with an instance of CouchDB.
+At time of writing, this is conservatively pinned to CouchDB 2.3.1 (see below for details about CouchDB 3.0).
+
+## Vagrant
+
+If you are in an environment (such as Windows 7) where running Docker is not possible, you can set the
+`FLUID_TEST_COUCH_USE_VAGRANT` environment variable to use [Vagrant](https://www.vagrantup.com) instead.  See below
+for details.  This will use the same version of CouchDB as the Docker route.
+
+## "External"
+
+If you would like to use your own standalone instance of CouchDB, configure it to listen to the same port used by the
+tests in this package (25984) and set the `FLUID_TEST_COUCH_USE_EXTERNAL` environment variable.  This mode is used by
+our CI setup, and the tests are run against the latest version of the CouchDB docker container (3.x at time of writing).
+
+Please note, when using an "external" instance, you must ensure that an administrative user named `admin` exists, whose
+password is set to `admin`.  In CouchDB 2.x, the default was to use the "admin party", where no username/password is
+required to access administrative functions.  In CouchDB 3.0 and higher, "admin party" has been removed and you must
+have an administrative username and password set.  Thankfully, the process of configuring these at least for docker
+containers is the same for both CouchDB 2.x and 3.x, i.e. you set two environment variables when creating the container.
+
+You can see examples of these environment variables in the GitHub Actions workflow found in this package's `.github`
+folder.
 
 ## Running the Tests
 
