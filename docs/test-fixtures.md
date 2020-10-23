@@ -18,7 +18,7 @@ for use in Fluid IoC Tests.
 
 ## `fluid.test.couchdb.testEnvironment.lucene`
 
-A test environment that provides both CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene).  Uses 
+A test environment that provides both CouchDB and [couchdb-lucene](https://github.com/rnewson/couchdb-lucene).  Uses
 [the `fluid.test.couchdb.harness.lucene` grade provided by this package](./harness.md).
 
 ### Component Options
@@ -53,11 +53,11 @@ documentation](./harness.md).
 | --------------- | ---------- | ----------- |
 | `rawModules`    | `{Object}` | The tests to execute.  Note that your tests must be defined in `rawModules` rather than `modules`,  otherwise they will not be able to trigger the automatic startup and shutdown sequence needed to use the harness safely. |
 | `sequenceGrade` | `{String}` | The sequence grade to use with any test that does not already have a sequence grade. |
- 
+
 ## `fluid.test.couchdb.request`
 
 A grade derived from
-[`kettle.test.request.http`](https://github.com/fluid-project/kettle/blob/master/docs/KettleTestingFramework.md#the-kettle-testing-framework)
+[`kettle.test.request.http`](https://github.com/fluid-project/kettle/blob/main/docs/KettleTestingFramework.md#the-kettle-testing-framework)
 for use in retrieving and then inspecting results from the test harness.
 
 ### Component Options
