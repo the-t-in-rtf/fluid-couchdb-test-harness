@@ -4,7 +4,8 @@
     "description": "A library to assist in testing CouchDB integration within the Fluid ecosystem.",
     "main": "index.js",
     "scripts": {
-        "test": "node node_modules/nyc/bin/nyc.js node tests/all-tests.js"
+        "lint": "fluid-lint-all",
+        "test": "nyc node tests/all-tests.js"
     },
     "repository": {
         "type": "git",
@@ -18,11 +19,9 @@
         "request": "2.88.2"
     },
     "devDependencies": {
-        "eslint": "7.5.0",
-        "eslint-config-fluid": "1.4.0",
-        "eslint-plugin-markdown": "1.0.2",
-        "fluid-grunt-lint-all": "1.0.8",
-        "grunt": "1.2.1",
+        "eslint": "7.18.0",
+        "eslint-config-fluid": "2.0.0",
+        "fluid-lint-all": "1.0.0",
         "kettle": "1.15.0",
         "node-jqunit": "1.1.8",
         "nyc": "15.1.0"
